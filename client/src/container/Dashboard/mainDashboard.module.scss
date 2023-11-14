@@ -1,0 +1,32 @@
+@import '../../assets/style/color';
+
+.mainDashboard {
+    width: 100vw;
+    height: 100vh;
+    background-color: $background-dashboard;
+    position: relative;
+
+    .formSidebar {
+        width: 20%;
+        height: auto;
+        float: left;
+        position: fixed;
+    }
+
+    .formcontent {
+        width: 80%;
+        height: 100%;
+        float: right;
+        overflow-y: auto;
+
+
+        .content {
+            width: 95%;
+            height: auto;
+            overflow-y: auto;
+            background-color: white;
+            height: 1000px;
+            margin-top: 2%;
+        }
+    }
+}

@@ -1,0 +1,23 @@
+@import '../assets/style/screen';
+
+.searchInputCustom {
+    width: 500px;
+}
+
+@include Reponsive($normalDesktop) {
+    .searchInputCustom {
+        width: 400px;
+    }
+}
+
+@include Reponsive($tablet) {
+    .searchInputCustom {
+        width: 700px;
+    }
+}
+
+@include Reponsive($mobile) {
+    .searchInputCustom {
+        width: auto;
+    }
+}

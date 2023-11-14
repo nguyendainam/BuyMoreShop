@@ -1,0 +1,56 @@
+$raleway-font: 'Raleway', sans-serif;
+
+
+
+$listspace: (
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+);
+
+
+@each $fspace in $listspace {
+    .m-#{$fspace} {
+        font-size: 14px;
+        margin: #{font}rem;
+    }
+
+    .my-#{$fspace} {
+        font-size: 18px;
+        margin: #{font}rem;
+    }
+
+    .fsmin {
+        font-size: 12px;
+    }
+
+    .fsnormal {
+        font-size: 18px;
+    }
+
+
+}
+
+.centerForm {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+
+.minItalic {
+    font-size: 12px;
+    font-weight: 300;
+
+}
+
+.normalBold {
+    font-size: 14px;
+    font-weight: 500;
+}
