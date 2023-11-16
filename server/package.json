@@ -23,6 +23,7 @@
     "express-fileupload": "^1.4.2",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
+    "moment": "^2.29.4",
     "mssql": "^10.0.1",
     "path": "^0.12.7",
     "url": "^0.11.3",

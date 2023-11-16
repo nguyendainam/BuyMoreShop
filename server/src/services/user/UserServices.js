@@ -4,10 +4,11 @@ import { v4 as uuidv4 } from 'uuid'
 import {
   checkPasswordUser,
   validateEmail,
-  hashUserPassword,
+  hashUserPassword
 } from '../../component/checkInformation.js'
 import jwt from '../../component/jwt.js'
 import { createPasswordChangeToken } from '../../component/random.js'
+import moment from 'moment/moment.js'
 
 let RegisterUserService = data => {
   return new Promise(async (resolve, reject) => {
@@ -35,6 +36,7 @@ let RegisterUserService = data => {
           let Gender = data.Gender
           let IsActive = data.IsActive ? data.IsActive : 1
           let CreatedAt = new Date()
+          let UpdatedAt = new Date()
           let saveUser = await pool
             .request()
             .input('UserId', mssql.VarChar, UserId)
@@ -44,10 +46,11 @@ let RegisterUserService = data => {
             .input('RoleId', mssql.VarChar, RoleId)
             .input('Gender', mssql.VarChar, Gender)
             .input('IsActive', mssql.Bit, IsActive)
-            .input('CreatedAt', mssql.DateTime, CreatedAt).query(`
-                        INSERT INTO Users (UserId, UserName, Password, Email, RoleId, Gender, IsActive, CreatedAt)
+            .input('CreatedAt', mssql.DateTime, CreatedAt)
+            .input('UpdatedAt', mssql.DateTime, UpdatedAt).query(`
+                        INSERT INTO Users (UserId, UserName, Password, Email, RoleId, Gender, IsActive, CreatedAt ,UpdatedAt)
                         SELECT 
-                            @UserId, @UserName, @Password, @Email, @RoleId, @Gender, @IsActive, @CreatedAt
+                            @UserId, @UserName, @Password, @Email, @RoleId, @Gender, @IsActive, @CreatedAt,@UpdatedAt
                         WHERE NOT EXISTS (
                             SELECT 1 FROM Users WHERE Email = @Email
                         );
@@ -113,61 +116,60 @@ const refreshNewAccessTokenService = (id, token) => {
       FROM UserSessions  as S
       JOIN Users AS U ON U.UserID  = S.UserID
       WHERE  
-      S.UserID = '${id}' AND S.Token = '${token}' `)
-
+      S.UserID = '${id}' AND S.Token = '${token}' `
+      )
 
       console.log(result.recordset)
 
       if (result.rowsAffected[0] === 1) {
         const roleUser = result.recordset[0].RoleId
         const newAccessToken = await jwt.generateAccessToken(id, roleUser)
-        if (newAccessToken) resolve({
-          err: 0,
-          errMessage: 'Create new AccessToken Successfull',
-          newAccessToken
-        })
+        if (newAccessToken)
+          resolve({
+            err: 0,
+            errMessage: 'Create new AccessToken Successfull',
+            newAccessToken
+          })
 
         resolve({
           err: 1,
           errMessage: 'Create new AccessToken Failed'
         })
       }
-
     } catch (e) {
       reject(e)
     }
   })
 }
 
+const forgotPasswordServices = email => {
+  console.log(email)
 
-const forgotPasswordServices = (email) => {
   return new Promise(async (resolve, reject) => {
     try {
+      const getToken = createPasswordChangeToken()
+      const pool = await connectDB()
+      const validateExpries = moment(getToken.passwordResetExpires).format(
+        'YYYY-MM-DD HH:mm:ss.SSS'
+      )
 
+      console.log(validateExpries)
 
-      const a = createPasswordChangeToken()
-      console.log(a)
-      // let pool = await connectDB()
-      // //  make sure user have in database
-      // let checkEmail = await pool.query(`SELECT * FROM Users WHERE Users.Email = '${email}'`)
-      // if (checkEmail.rowsAffected[0] === 1) {
+      let result = await pool
+        .request()
+        .input('ResetToken', mssql.VarChar, getToken.passwordResetToken)
+        .input('ResetTokenExpries', mssql.DateTime, validateExpries)
+        .query(`UPDATE Users
+                SET ResetToken = @ResetToken , ResetTokenExpries =  @ResetTokenExpries
+                WHERE Email = '${email}'
 
-
-      // } else {
-      //   resolve({
-      //     err: 1,
-      //     errMessage: 'User not found'
-      //   })
-      // }
-
-
-
+        `)
+      resolve(result)
     } catch (e) {
       reject(e)
     }
   })
 }
-
 
 export default {
   RegisterUserService,

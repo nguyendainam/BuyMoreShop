@@ -22,7 +22,17 @@ const createCategory = async (req, res) => {
   }
 }
 
+const createOrUpdateItemCategory = async (req, res) => {
+  try {
+    let result = await categoryServices.createOrUpdateItemCategory(req.body)
+    return res.status(200).json(result)
+  } catch (e) {
+    return res.status(400).json(e)
+  }
+}
+
 export default {
   createCategory,
-  createItemListCat
+  createItemListCat,
+  createOrUpdateItemCategory
 }

@@ -34,8 +34,7 @@ const createOrUpdateItesmToList = (data, imageCategory) => {
                             SELECT 1 
                             FROM ListCategory 
                             WHERE nameVI = @nameVI OR nameEN = @nameEN
-                        )
-                            `)
+                        )`)
 
           if (result.rowsAffected[0] === 1) {
             resolve({
@@ -153,9 +152,6 @@ const createOrUpdateCategory = data => {
                         WHERE (C.NameVI = @NameVI OR C.NameEN = @NameEN)
                         AND C.IdListCat = @IdListCat
                     ) `)
-
-            console.log(result)
-
             if (result.rowsAffected[0] === 1) {
               resolve({
                 err: 0,
@@ -169,6 +165,38 @@ const createOrUpdateCategory = data => {
             }
           }
         } else if (data.action.toLowerCase() === 'update') {
+          if (!data.nameVI || !data.nameEN || !data.IdListCat || !data.Id) {
+            resolve({
+              err: -1,
+              errMessage: 'Missing data required to update'
+            })
+          } else {
+            const pool = await connectDB()
+            let result = await pool
+              .request()
+              .input('NameVI', mssql.NVarChar, data.nameVI)
+              .input('NameEN', mssql.VarChar, data.nameEN)
+              .input('IdListCat', mssql.Int, data.IdListCat)
+              .query(`UPDATE Category 
+                      SET NameVI = @NameVI, NameEN = @NameEN, IdListCat =@IdListCat
+                      WHERE Id  = ${data.Id}
+                      AND 
+                      NOT EXISTS(
+                        SELECT 1 FROM Category AS C WHERE (C.NameVI = @NameVI OR C.NameEN = @NameEN)
+                        AND C.IdListCat = '${data.IdListCat}'
+                      ) `)
+            if (result.rowsAffected[0] === 1) {
+              resolve({
+                err: 0,
+                errMessage: 'Update successfully'
+              })
+            } else {
+              resolve({
+                err: 2,
+                errMessage: 'Update failed'
+              })
+            }
+          }
         }
       }
     } catch (e) {
@@ -179,7 +207,110 @@ const createOrUpdateCategory = data => {
 
 // END ITEMS CATEGORY
 
+// ITEM CATEGORY
+
+const createOrUpdateItemCategory = data => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data) {
+        resolve({
+          err: -1,
+          errMessage: 'Missing data required'
+        })
+      } else {
+        if (data.action.toLowerCase() === 'create') {
+          if (!data.nameVI || !data.IdCategory) {
+            resolve({
+              err: -1,
+              errMessage: 'Missing data required to create category'
+            })
+          } else {
+            let IdItems = randomInterger()
+            const pool = await connectDB()
+            const result = await pool
+              .request()
+              .input('IdItem', mssql.Int, IdItems)
+              .input('nameVI', mssql.NVarChar, data.nameVI)
+              .input('nameEN', mssql.VarChar, data.nameEN)
+              .input('IdCategory', mssql.Int, data.IdCategory)
+              .query(
+                `
+                INSERT INTO ItemCategory (IdItem, nameVI, nameEN , Id_Category)
+                SELECT @IdItem, @nameVI, @nameEN, @IdCategory
+                WHERE NOT EXISTS (
+                  SELECT  1 FROM ItemCategory AS I
+                  WHERE (I.nameVI = @nameVI OR I.nameEN = @nameEN)
+                  AND   I.Id_Category = @IdCategory
+                  OR   I.IdItem = @IdItem
+                )  
+                `
+              )
+
+            if (result.rowsAffected[0] === 1) {
+              resolve({
+                err: 0,
+                errMessage: 'Create Item Category Success'
+              })
+            } else {
+              resolve({
+                err: 1,
+                errMessage: 'Create Item Category Failed'
+              })
+            }
+          }
+        } else if (data.action.toLowerCase() === 'update') {
+          if (
+            !data.IdItem ||
+            !data.nameEN ||
+            !data.nameVI ||
+            !data.IdCategory
+          ) {
+            resolve({
+              err: 1,
+              errMessage: 'Missing data required to update'
+            })
+          } else {
+            const pool = await connectDB()
+            const result = await pool
+              .request()
+              .input('nameVI', mssql.NVarChar, data.nameVI)
+              .input('nameEN', mssql.VarChar, data.nameEN)
+              .input('IdCategory', mssql.Int, data.IdCategory)
+              .query(
+                `UPDATE ItemCategory 
+                SET nameVI =  @nameVI, nameEN = @nameEN
+                WHERE IdItem = '${data.IdItem}'
+                AND 
+                NOT EXISTS (
+                  SELECT  1 FROM ItemCategory AS I
+                  WHERE (I.nameVI = @nameVI OR I.nameEN = @nameEN)
+                  AND   I.Id_Category = @IdCategory
+                  
+                )  
+                `
+              )
+            if (result.rowsAffected[0] === 1) {
+              resolve({
+                err: 0,
+                errMessage: 'Update ItemCategory successfully '
+              })
+            } else {
+              resolve({
+                err: 1,
+                errMessage: 'Update ItemCategory failed'
+              })
+            }
+          }
+        }
+      }
+    } catch (e) {
+      reject(e)
+    }
+  })
+}
+
 export default {
   createOrUpdateCategory,
-  createOrUpdateItesmToList
+  createOrUpdateItesmToList,
+  createOrUpdateItemCategory
 }
