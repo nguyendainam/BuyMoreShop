@@ -4,11 +4,17 @@ import LoginController from '../controller/login/LoginController.js'
 import { verifyAccessToken } from '../component/verifyToken.js'
 const router = Router()
 
-router.get('/user', UserController.getListUser)
-router.post('/registerUser', UserController.RegisterUser)
+
+
 router.post('/login', LoginController.LoginUser)
+router.post('/logout', LoginController.LogOut)
 
 //  get AccessToken and return the information  User
-router.get('/currentUser', verifyAccessToken, UserController.getCurrent)
+router.post('/registerUser', UserController.RegisterUser)
+router.get('/currentUser', verifyAccessToken, UserController.getCurrentUser)
+router.post('/refreshToken', UserController.refreshNewAccessToken)
+router.get('/forgotPassword', UserController.forgotPassword)
+
+
 
 export default router

@@ -1,7 +1,9 @@
 import bcrypt from 'bcryptjs'
+
+
+
 const salt = bcrypt.genSaltSync(10)
 const hash = bcrypt.hashSync('B4c0//', salt)
-
 export const validateEmail = email => {
   const token =
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
@@ -39,3 +41,6 @@ export const confirmPassword = async (password, hardPassword) => {
     return checkPassword
   }
 }
+
+
+

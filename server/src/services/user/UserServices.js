@@ -4,8 +4,10 @@ import { v4 as uuidv4 } from 'uuid'
 import {
   checkPasswordUser,
   validateEmail,
-  hashUserPassword
+  hashUserPassword,
 } from '../../component/checkInformation.js'
+import jwt from '../../component/jwt.js'
+import { createPasswordChangeToken } from '../../component/random.js'
 
 let RegisterUserService = data => {
   return new Promise(async (resolve, reject) => {
@@ -101,7 +103,75 @@ let getCurrentService = data => {
   })
 }
 
+const refreshNewAccessTokenService = (id, token) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let pool = await connectDB()
+      let result = await pool.request().query(
+        `
+      SELECT S.* , U.RoleId 
+      FROM UserSessions  as S
+      JOIN Users AS U ON U.UserID  = S.UserID
+      WHERE  
+      S.UserID = '${id}' AND S.Token = '${token}' `)
+
+
+      console.log(result.recordset)
+
+      if (result.rowsAffected[0] === 1) {
+        const roleUser = result.recordset[0].RoleId
+        const newAccessToken = await jwt.generateAccessToken(id, roleUser)
+        if (newAccessToken) resolve({
+          err: 0,
+          errMessage: 'Create new AccessToken Successfull',
+          newAccessToken
+        })
+
+        resolve({
+          err: 1,
+          errMessage: 'Create new AccessToken Failed'
+        })
+      }
+
+    } catch (e) {
+      reject(e)
+    }
+  })
+}
+
+
+const forgotPasswordServices = (email) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+
+
+      const a = createPasswordChangeToken()
+      console.log(a)
+      // let pool = await connectDB()
+      // //  make sure user have in database
+      // let checkEmail = await pool.query(`SELECT * FROM Users WHERE Users.Email = '${email}'`)
+      // if (checkEmail.rowsAffected[0] === 1) {
+
+
+      // } else {
+      //   resolve({
+      //     err: 1,
+      //     errMessage: 'User not found'
+      //   })
+      // }
+
+
+
+    } catch (e) {
+      reject(e)
+    }
+  })
+}
+
+
 export default {
   RegisterUserService,
-  getCurrentService
+  getCurrentService,
+  refreshNewAccessTokenService,
+  forgotPasswordServices
 }

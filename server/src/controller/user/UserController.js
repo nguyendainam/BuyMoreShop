@@ -1,15 +1,7 @@
+import jwt from 'jsonwebtoken'
 import UserServices from '../../services/user/UserServices.js'
-let getListUser = async (req, res) => {
-  try {
-    return res.status(200).json({
-      data: '1213123'
-    })
-  } catch (e) {
-    console.log(e)
-  }
-}
 
-let RegisterUser = async (req, res) => {
+const RegisterUser = async (req, res) => {
   try {
     let data = await UserServices.RegisterUserService(req.body)
     return res.status(200).json(data)
@@ -19,7 +11,7 @@ let RegisterUser = async (req, res) => {
   }
 }
 
-let getCurrent = async (req, res) => {
+const getCurrentUser = async (req, res) => {
   const _id = req.user
   try {
     let data = await UserServices.getCurrentService(_id)
@@ -33,8 +25,53 @@ let getCurrent = async (req, res) => {
   }
 }
 
+
+const refreshNewAccessToken = async (req, res) => {
+  try {
+    const cookie = req.cookies
+    if (!cookie && !cookie.refresh_token) return res.status(400).json({
+      err: -1,
+      errMessage: 'No refresh Token in cookie'
+    })
+    // Check if the Token is still valid or not
+    jwt.verify(cookie.refresh_token, process.env.JWT_SECRET, async (err, decode) => {
+      if (err) return res.status(400).json({ err: 1, errMessage: 'Invalid Token' })
+      //  if The token is still valid => check the Token with Database
+      const data = await UserServices.refreshNewAccessTokenService(decode._id, cookie.refresh_token)
+      return res.status(200).json(data)
+    })
+  } catch (e) {
+    return res.status(400).json(e)
+  }
+}
+
+
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.query
+    if (!email) return res.status(400).json({
+      err: -1,
+      errMessage: 'Missing data required'
+
+    })
+
+    let result = await UserServices.forgotPasswordServices(email)
+    return res.status(200).json(result)
+
+
+  } catch (e) {
+    console.log(e)
+    return res.status(400).json(e)
+  }
+}
+
+
+
+
+
 export default {
-  getListUser,
   RegisterUser,
-  getCurrent
+  getCurrentUser,
+  refreshNewAccessToken,
+  forgotPassword
 }

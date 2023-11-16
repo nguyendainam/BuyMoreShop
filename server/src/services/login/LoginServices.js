@@ -5,7 +5,7 @@ import {
 import { connectDB } from '../../connectDB/index.js'
 import jwt from '../../component/jwt.js'
 import mssql from 'mssql'
-import random from '../../component/random.js'
+import { randomInterger } from '../../component/random.js'
 
 const LoginUserServices = data => {
   return new Promise(async (resolve, reject) => {
@@ -39,7 +39,7 @@ const LoginUserServices = data => {
               const accessToken = await jwt.generateAccessToken(iUs, role)
               const refreshToken = await jwt.generateRefreshToken(iUs)
 
-              const Id = random.randomInterger()
+              const Id = randomInterger()
               const ExpiryTime = new Date()
               // Update or create accout to UserSessions
               await pool
@@ -86,6 +86,29 @@ const LoginUserServices = data => {
   })
 }
 
+const LogoutUserServices = (refreshToken) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const pool = await connectDB()
+      const updateSession = await pool.request().query(`UPDATE UserSessions SET Token = '' WHERE Token = '${refreshToken}'`)
+      if (updateSession) {
+        resolve({
+          err: 0,
+          errMessage: 'Logout Success'
+        })
+      }
+      resolve({
+        err: 1,
+        errMessage: 'Logout Failed'
+      })
+
+    } catch (e) {
+      reject(e)
+    }
+  })
+}
+
 export default {
-  LoginUserServices
+  LoginUserServices,
+  LogoutUserServices
 }
