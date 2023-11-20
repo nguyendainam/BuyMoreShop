@@ -8,7 +8,6 @@ interface IMenuDashboard {
   children: {
     key: string
     label: string
-    link?: string
   }[]
 }
 
@@ -20,7 +19,7 @@ export const menuDashboard: IMenuDashboard[] = [
 
     children: [
       {
-        key: 'dashboard1',
+        key: '/',
         label: 'dashboard1'
       },
       {
@@ -35,12 +34,12 @@ export const menuDashboard: IMenuDashboard[] = [
     icon: <AppstoreOutlined />,
     children: [
       {
-        key: 'product1',
-        label: 'product1'
+        key: 'product',
+        label: 'List product'
       },
       {
-        key: 'product 2',
-        label: 'product 2'
+        key: 'product/add',
+        label: 'Add Product'
       }
     ]
   },

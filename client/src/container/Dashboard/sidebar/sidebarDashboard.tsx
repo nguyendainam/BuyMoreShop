@@ -1,12 +1,14 @@
-import React from 'react'
 import style from './sidebarDashboard.module.scss'
 import { Logo } from '../../../assets/image'
 import Sider from 'antd/es/layout/Sider'
 import { Menu } from 'antd'
 import menuDashboard from '../../../components/datatest/menuDashboard'
+import { useNavigate, useParams } from 'react-router-dom'
+// import { useEffect, useState } from 'react'
 
 export default function SidebarDashboard () {
   const menu = menuDashboard
+  const navigate = useNavigate()
   const items = menu.map(item => {
     return {
       key: item.key,
@@ -21,9 +23,10 @@ export default function SidebarDashboard () {
       })
     }
   })
-
-  console.log(menuDashboard)
-
+  const { '*': productParam } = useParams()
+  const handleChanePath = key => {
+    navigate(key)
+  }
   return (
     <div className={style.mainSidebar}>
       <div className={style.formLogo}>
@@ -33,9 +36,9 @@ export default function SidebarDashboard () {
       <div className={style.listItems}>
         <Sider>
           <Menu
+            onClick={({ key }) => handleChanePath(key)}
             mode='inline'
-            defaultSelectedKeys={['1']}
-            defaultOpenKeys={['sub1']}
+            defaultSelectedKeys={[!productParam ? '/' : productParam]}
             items={items}
             className={style.menuItems}
             theme='light'

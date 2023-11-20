@@ -9,6 +9,8 @@ import {
 import jwt from '../../component/jwt.js'
 import { createPasswordChangeToken } from '../../component/random.js'
 import moment from 'moment/moment.js'
+import sendEmail from '../../component/formemail.js'
+import { fomatForgetPassword } from '../../until/formHtml.js'
 
 let RegisterUserService = data => {
   return new Promise(async (resolve, reject) => {
@@ -143,8 +145,6 @@ const refreshNewAccessTokenService = (id, token) => {
 }
 
 const forgotPasswordServices = email => {
-  console.log(email)
-
   return new Promise(async (resolve, reject) => {
     try {
       const getToken = createPasswordChangeToken()
@@ -152,9 +152,6 @@ const forgotPasswordServices = email => {
       const validateExpries = moment(getToken.passwordResetExpires).format(
         'YYYY-MM-DD HH:mm:ss.SSS'
       )
-
-      console.log(validateExpries)
-
       let result = await pool
         .request()
         .input('ResetToken', mssql.VarChar, getToken.passwordResetToken)
@@ -164,7 +161,32 @@ const forgotPasswordServices = email => {
                 WHERE Email = '${email}'
 
         `)
-      resolve(result)
+
+      if (result.rowsAffected[0] === 1) {
+        let datacontent = {
+          language: 'en',
+          token: getToken.resetToken
+        }
+        const html = fomatForgetPassword(datacontent)
+        let data = await sendEmail(email, html)
+
+        if (data.messageId) {
+          resolve({
+            err: 0,
+            errMessage: 'Request send successful'
+          })
+        } else {
+          resolve({
+            err: 2,
+            errMessage: 'Request send failed'
+          })
+
+          await pool.request().query(`UPDATE Users
+                  SET ResetToken = NULL , ResetTokenExpries =  NNULL
+                  WHERE Email = '${email}'
+          `)
+        }
+      }
     } catch (e) {
       reject(e)
     }

@@ -54,3 +54,21 @@ $listspace: (
     font-size: 14px;
     font-weight: 500;
 }
+
+.titleheader {
+    font-size: 25px;
+    font-weight: 600;
+    font-style: italic;
+    color: rgb(0, 76, 255);
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding-left: 5%;
+
+}
+
+.icon {
+    font-size: 35px;
+    cursor: pointer;
+}
