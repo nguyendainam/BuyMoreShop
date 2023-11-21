@@ -6,6 +6,16 @@
 }
 
 
+.inputWidth65 {
+    width: 65%;
+    height: 80px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin: 2%;
+    margin-bottom: 5%;
+}
 
 .inputWidth45 {
     width: 45%;
@@ -36,7 +46,7 @@
 
 
 .inputWidthMin15 {
-    width: 15%;
+    width: 25%;
     height: auto;
     display: flex;
     flex-direction: column;
@@ -53,27 +63,19 @@
     max-height: 400px;
     overflow: auto;
 
-    // .viewFile {
-    //     width: 25%;
-    //     float: left;
-    //     max-height: 400px;
-    //     overflow: auto;
+    .viewFile {
+        width: 25%;
+        max-height: 400px;
+        overflow: auto;
+        border: 1px solid red;
 
-    //     :global {
-    //         .ant-upload-select {
-    //             width: 25%;
-    //             position: absolute;
-    //             background-color: white;
-    //             z-index: 99;
-    //         }
-    //     }
-    // }
+    }
 
-    // .viewImage {
-    //     width: 65%;
-    //     float: right;
-    //     max-height: 400px;
-    //     overflow: auto;}
+    .viewImage {
+        width: 65%;
+        float: right;
+        max-height: 400px;
+        overflow: auto;}
 
 
 }

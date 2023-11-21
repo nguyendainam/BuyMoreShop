@@ -6,7 +6,7 @@ import menuDashboard from '../../../components/datatest/menuDashboard'
 import { useNavigate, useParams } from 'react-router-dom'
 // import { useEffect, useState } from 'react'
 
-export default function SidebarDashboard () {
+export default function SidebarDashboard() {
   const menu = menuDashboard
   const navigate = useNavigate()
   const items = menu.map(item => {

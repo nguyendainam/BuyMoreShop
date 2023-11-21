@@ -3,7 +3,8 @@ import Home from './container/Clients/Home'
 import PrivateRouter from './router/privateRouter'
 import MainDashboard from './container/Dashboard/mainDashboard'
 import './assets/style/style.module.scss'
-function App () {
+
+function App() {
   return (
     <>
       <Routes>

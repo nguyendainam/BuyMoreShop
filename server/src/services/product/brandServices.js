@@ -1,3 +1,5 @@
+
+import { randomInterger } from "../../component/random.js"
 import { RemoveImage, SaveImage } from "../../component/saveImage.js"
 import { connectDB } from "../../connectDB/index.js"
 import mssql from 'mssql'
@@ -21,15 +23,17 @@ const CreateOrUpdateBrand = (data, ImageBrand) => {
                         })
                     } else {
                         const pool = await connectDB()
+                        let IdBrand = randomInterger().toString()
                         let imagePath = ImageBrand ? await SaveImage(ImageBrand.ImageBrand, key) : null
                         let result = await pool.request()
+                            .input('IdBrand', mssql.VarChar, IdBrand)
                             .input('NameBrand', mssql.NVarChar, data.NameBrand)
                             .input('ImageBrand', mssql.VarChar, imagePath)
                             .input('DescVI', mssql.NText, data.DescVI)
                             .input('DescEN', mssql.Text, data.DescEN)
                             .query(`
-                                INSERT INTO Brands (NameBrand, ImageBrand, DescVI, DescEN)
-                                SELECT @NameBrand , @ImageBrand ,@DescVI ,@DescEN
+                                INSERT INTO Brands (IdBrand, NameBrand, ImageBrand, DescVI, DescEN)
+                                SELECT @IdBrand,  @NameBrand , @ImageBrand ,@DescVI ,@DescEN
                                 WHERE NOT EXISTS (
                                     SELECT 1 FROM Brands as B
                                     WHERE B.NameBrand = @NameBrand

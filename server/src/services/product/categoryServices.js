@@ -6,8 +6,8 @@ import { SaveImage, RemoveImage } from '../../component/saveImage.js'
 
 const key = 'category'
 
-//  LIST CATEGORY
-const createOrUpdateItesmToList = (data, imageCategory) => {
+//  Category
+const createOrUpdateCategory = (data, imageCategory) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.nameVI || !data.action) {
@@ -17,22 +17,20 @@ const createOrUpdateItesmToList = (data, imageCategory) => {
         })
       } else {
         if (data.action.toLowerCase() === 'create') {
-          let Id = randomInterger()
           let nameVI = data.nameVI
           let nameEN = data.nameEN
           let saveImage = await SaveImage(imageCategory.image, key)
           let pool = await connectDB()
           let result = await pool
             .request()
-            .input('Id', mssql.Int, Id)
             .input('nameVI', mssql.NVarChar, nameVI)
             .input('nameEN', mssql.VarChar, nameEN)
             .input('ImageCat', mssql.VarChar, saveImage).query(`
-                        INSERT INTO ListCategory (idListCat, nameVI, nameEN, ImageCat)
-                        SELECT @Id, @nameVI, @nameEN, @ImageCat
+                        INSERT INTO Category ( nameVI, nameEN, ImageCat)
+                        SELECT @nameVI, @nameEN, @ImageCat
                         WHERE NOT EXISTS (
                             SELECT 1 
-                            FROM ListCategory 
+                            FROM Category 
                             WHERE nameVI = @nameVI OR nameEN = @nameEN
                         )`)
 
@@ -77,12 +75,12 @@ const createOrUpdateItesmToList = (data, imageCategory) => {
                 .input('nameVI', mssql.NVarChar, nameVI)
                 .input('nameEN', mssql.VarChar, nameEN)
                 .input('ImageCat', mssql.VarChar, newImage).query(`
-                                        UPDATE ListCategory 
+                                        UPDATE Category 
                                         SET nameVI = @nameVI , nameEN =@nameEN, ImageCat = @ImageCat
-                                        WHERE idListCat = '${IdCategory}'
+                                        WHERE Id = '${IdCategory}'
                                         AND
                                         NOT EXISTS (
-                                            SELECT 1 FROM  ListCategory AS L WHERE (L.nameVI = @nameVI OR L.nameEN =@nameEN)
+                                            SELECT 1 FROM  Category AS L WHERE (L.nameVI = @nameVI OR L.nameEN =@nameEN)
                                             AND L.idListCat <> '${IdCategory}'
                                        )`)
 
@@ -118,11 +116,11 @@ const createOrUpdateItesmToList = (data, imageCategory) => {
   })
 }
 
-//  END LIST CATEGORY
+//   List ItemCategory
 
-//  ITEMS CATEGORY
+const createOrUpdateItesmToList = data => {
 
-const createOrUpdateCategory = data => {
+  // console.log(data)
   return new Promise(async (resolve, reject) => {
     try {
       if (!data) {
@@ -132,25 +130,28 @@ const createOrUpdateCategory = data => {
         })
       } else {
         if (data.action.toLowerCase() === 'create') {
-          if (!data.nameVI || !data.nameEN || !data.IdListCat) {
+          if (!data.nameVI || !data.nameEN) {
             resolve({
               err: 1,
               errMessage: 'Missing data to create category'
             })
           } else {
             let pool = await connectDB()
-
+            let Id = randomInterger().toString()
             let result = await pool
               .request()
+              .input('idListCat', mssql.VarChar, Id)
               .input('NameVI', mssql.NVarChar, data.nameVI)
               .input('NameEN', mssql.VarChar, data.nameEN)
-              .input('IdListCat', mssql.Int, data.IdListCat).query(`
-                    INSERT INTO Category (NameVI , NameEN, IdListCat)
-                    SELECT @NameVI, @NameEN , @IdListCat
+              .input('IdCat', mssql.Int, data.IdCat)
+
+              .query(`
+                    INSERT INTO ListCategory (idListCat, NameVI , NameEN, IdCat)
+                    SELECT @idListCat, @NameVI, @NameEN , @IdCat
                     WHERE NOT EXISTS (
-                        SELECT 1 FROM Category AS C
+                        SELECT 1 FROM ListCategory AS C
                         WHERE (C.NameVI = @NameVI OR C.NameEN = @NameEN)
-                        AND C.IdListCat = @IdListCat
+                        AND C.IdCat = @IdCat
                     ) `)
             if (result.rowsAffected[0] === 1) {
               resolve({
@@ -165,7 +166,7 @@ const createOrUpdateCategory = data => {
             }
           }
         } else if (data.action.toLowerCase() === 'update') {
-          if (!data.nameVI || !data.nameEN || !data.IdListCat || !data.Id) {
+          if (!data.nameVI || !data.nameEN || !data.IdCat || !data.Id) {
             resolve({
               err: -1,
               errMessage: 'Missing data required to update'
@@ -176,14 +177,14 @@ const createOrUpdateCategory = data => {
               .request()
               .input('NameVI', mssql.NVarChar, data.nameVI)
               .input('NameEN', mssql.VarChar, data.nameEN)
-              .input('IdListCat', mssql.Int, data.IdListCat)
-              .query(`UPDATE Category 
-                      SET NameVI = @NameVI, NameEN = @NameEN, IdListCat =@IdListCat
-                      WHERE Id  = ${data.Id}
+              .input('IdCat', mssql.Int, data.IdCat)
+              .query(`UPDATE ListCategory 
+                      SET NameVI = @NameVI, NameEN = @NameEN, IdCat =@IdCat
+                      WHERE idListCat  = ${data.Id}
                       AND 
                       NOT EXISTS(
-                        SELECT 1 FROM Category AS C WHERE (C.NameVI = @NameVI OR C.NameEN = @NameEN)
-                        AND C.IdListCat = '${data.IdListCat}'
+                        SELECT 1 FROM ListCategory AS C WHERE (C.NameVI = @NameVI OR C.NameEN = @NameEN)
+                        AND C.IdCat = '${data.IdCat}'
                       ) `)
             if (result.rowsAffected[0] === 1) {
               resolve({
@@ -219,29 +220,29 @@ const createOrUpdateItemCategory = data => {
         })
       } else {
         if (data.action.toLowerCase() === 'create') {
-          if (!data.nameVI || !data.IdCategory) {
+          if (!data.nameVI || !data.Id_listCategory) {
             resolve({
               err: -1,
               errMessage: 'Missing data required to create category'
             })
           } else {
-            let IdItems = randomInterger()
+            let IdItems = randomInterger().toString()
             const pool = await connectDB()
             const result = await pool
               .request()
-              .input('IdItem', mssql.Int, IdItems)
+              .input('IdItemCat', mssql.Int, IdItems)
               .input('nameVI', mssql.NVarChar, data.nameVI)
               .input('nameEN', mssql.VarChar, data.nameEN)
-              .input('IdCategory', mssql.Int, data.IdCategory)
+              .input('IdListCat', mssql.Int, data.Id_listCategory)
               .query(
                 `
-                INSERT INTO ItemCategory (IdItem, nameVI, nameEN , Id_Category)
-                SELECT @IdItem, @nameVI, @nameEN, @IdCategory
+                INSERT INTO ItemCategory (IdItemCat, nameVI, nameEN , IdListCat)
+                SELECT @IdItemCat, @nameVI, @nameEN, @IdListCat
                 WHERE NOT EXISTS (
                   SELECT  1 FROM ItemCategory AS I
                   WHERE (I.nameVI = @nameVI OR I.nameEN = @nameEN)
-                  AND   I.Id_Category = @IdCategory
-                  OR   I.IdItem = @IdItem
+                  AND   I.IdListCat = @IdListCat
+                  OR   I.IdItemCat = @IdItemCat
                 )  
                 `
               )
@@ -263,7 +264,7 @@ const createOrUpdateItemCategory = data => {
             !data.IdItem ||
             !data.nameEN ||
             !data.nameVI ||
-            !data.IdCategory
+            !data.Id_listCategory
           ) {
             resolve({
               err: 1,
@@ -275,16 +276,16 @@ const createOrUpdateItemCategory = data => {
               .request()
               .input('nameVI', mssql.NVarChar, data.nameVI)
               .input('nameEN', mssql.VarChar, data.nameEN)
-              .input('IdCategory', mssql.Int, data.IdCategory)
+              .input('IdListCat', mssql.Int, data.Id_listCategory)
               .query(
                 `UPDATE ItemCategory 
                 SET nameVI =  @nameVI, nameEN = @nameEN
-                WHERE IdItem = '${data.IdItem}'
+                WHERE IdItemCat = '${data.IdItem}'
                 AND 
                 NOT EXISTS (
                   SELECT  1 FROM ItemCategory AS I
                   WHERE (I.nameVI = @nameVI OR I.nameEN = @nameEN)
-                  AND   I.Id_Category = @IdCategory
+                  AND   I.IdListCat = @IdListCat
                   
                 )  
                 `

@@ -7,8 +7,8 @@ import {
   Upload,
   Button,
   InputNumber,
-  message,
-  Modal
+  Modal,
+  message
 } from 'antd'
 import { MdOutlineAddCircleOutline } from 'react-icons/md'
 import { ImCancelCircle } from 'react-icons/im'
@@ -22,7 +22,10 @@ import {
 import type { RcFile, UploadProps } from 'antd/es/upload'
 import type { UploadFile } from 'antd/es/upload/interface'
 import { PlusOutlined } from '@ant-design/icons'
-
+import { TfiWrite } from "react-icons/tfi";
+import { TextEditor } from '../../../components/textEditor'
+import FormData from 'form-data'
+import { CreateProduct } from '../../../services/product'
 // =================================================================  //
 interface IlistInventory {
   size: string
@@ -38,8 +41,9 @@ interface IProduct {
   category: string
   brand: string
   discount: number | string | null
+  descVI: string
+  descEN: string
 }
-
 const getBase64 = (file: RcFile): Promise<string> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -59,16 +63,24 @@ const uploadButton = (
 // ==================================================================================
 // ==================================================================================
 
-export default function AddProduct () {
+export default function AddProduct() {
   const [product, setproduct] = useState<IProduct>({
     nameVI: '',
     nameEN: '',
     category: '',
     brand: '',
-    discount: null
+    discount: null,
+    descVI: '',
+    descEN: ''
   })
 
-  const [listInventory, setListInventory] = useState<IlistInventory[]>([])
+  const [listInventory, setListInventory] = useState<IlistInventory[]>([{
+    size: '',
+    color: '',
+    quantity: 1,
+    price: 0,
+    Image: []
+  }])
 
   const newProduct: IlistInventory = {
     size: '',
@@ -82,19 +94,26 @@ export default function AddProduct () {
   const [previewImage, setPreviewImage] = useState('')
   const [previewTitle, setPreviewTitle] = useState('')
   const [fileList, setFileList] = useState<UploadFile[]>([])
+  const [openDesc, setOpenDesc] = useState<boolean>(false)
 
-  useEffect(() => {}, [listInventory])
+  useEffect(() => { }, [listInventory])
 
   const handleCreateNew = () => {
     setListInventory(prevState => [...prevState, newProduct])
   }
 
   const handleDeleteInventory = key => {
-    setListInventory(prevState => {
-      const updateList = [...prevState]
-      updateList.splice(key, 1)
-      return updateList
-    })
+    if (listInventory.length === 1) {
+      message.error('Đéo đc xóa nữa')
+    } else {
+      setListInventory(prevState => {
+        const updateList = [...prevState]
+        updateList.splice(key, 1)
+        return updateList
+      })
+
+    }
+
   }
 
   const handleOnchange = (key: number, value: any, id: string) => {
@@ -206,12 +225,30 @@ export default function AddProduct () {
     })
   }
 
-  console.log(listInventory)
+  const handleGetDesc = (data: string, key?: string) => {
+    const coppyState = { ...product }
+    coppyState[key] = data
+    setproduct(coppyState)
+  }
+  const handleSaveProduct = async () => {
+    const formData = new FormData()
+    formData.append('Inventory', JSON.stringify(listInventory))
+    formData.append(`ImageProduct`, JSON.stringify(fileList))
+    formData.append('Product', JSON.stringify(product))
+
+
+    const createProduct = await CreateProduct(formData)
+    console.log(createProduct)
+
+  }
+
+
+
 
   return (
     <div className={style.mainAddProduct}>
-      <div className={style.titleheader}>Add product</div>
 
+      {/* <div className={style.titleheader}>Add product</div> */}
       <div className={style.formProduct}>
         <div className={style.inputWidth}>
           <Typography.Title level={5}>Name Product VI </Typography.Title>
@@ -244,7 +281,7 @@ export default function AddProduct () {
           <Select options={Discount} />
         </div>
 
-        <div className={style.inputWidth}>
+        <div className={style.inputMaxWidth}>
           <div className={style.viewFile}>
             <Typography.Title level={5}> Image Show</Typography.Title>
 
@@ -268,12 +305,41 @@ export default function AddProduct () {
               <img alt='example' style={{ width: '100%' }} src={previewImage} />
             </Modal>
           </div>
-          <div className={style.viewImage}></div>
+        </div>
+
+        <div className={style.inputDes}>
+          <div className={style.formButton}>
+            <Button type="dashed" onClick={() => setOpenDesc(!openDesc)}>
+              <TfiWrite className={style.icon} />
+              {openDesc ? 'Hide' : 'Add'}  Description
+            </Button>
+
+          </div>
+          {openDesc && (
+            <>
+              <div className={style.descProduct}>
+                <span>Description VI</span>
+                <TextEditor
+                  handleSendContext={handleGetDesc}
+                  editorKey="descVI"
+                  content={product.descVI}
+                />
+              </div>
+              <div className={style.descProduct}>
+                <span>Description EN</span>
+                <TextEditor
+                  handleSendContext={handleGetDesc}
+                  editorKey="descEN"
+                  content={product.descEN}
+                />
+              </div>
+            </>
+          )}
         </div>
       </div>
 
       <div className={style.formInventory}>
-        các thông tin liên quan
+
         {listInventory.map((item, index) => {
           const dataImage = listInventory[index].Image
           return (
@@ -286,6 +352,7 @@ export default function AddProduct () {
                     handleOnchange(index, options.value, 'size')
                   }
                   value={item.size}
+
                 />
               </div>
               <div className={style.inputWidthMin15}>
@@ -317,16 +384,26 @@ export default function AddProduct () {
                   type='number'
                 />
               </div>
-              <div className={style.inputMaxWidth}>
-                <Typography.Title level={5}> Image</Typography.Title>
+              <div className={style.inputWidthMax}>
+                <Typography.Title level={5}  > Image</Typography.Title>
                 <Upload
                   listType='picture-card'
                   onChange={file => handleImageListIv(file.file, index)}
                   fileList={dataImage}
                   onRemove={file => handleRemoveImage(file, index)}
+                  onPreview={handlePreview}
                 >
                   {listInventory[index].Image.length >= 4 ? null : uploadButton}
                 </Upload>
+
+                <Modal
+                  open={previewOpen}
+                  title={previewTitle}
+                  footer={null}
+                  onCancel={() => setPreviewOpen(false)}
+                >
+                  <img alt='example' style={{ width: '100%' }} src={previewImage} />
+                </Modal>
               </div>
 
               <div className={style.cancelForm}>
@@ -340,12 +417,13 @@ export default function AddProduct () {
           )
         })}
         <div className={style.addformInput}>
-          <div className={style.icon} onClick={handleCreateNew}>
+          {listInventory.length >= 5 ? null : <div className={style.icon} onClick={handleCreateNew}>
             <MdOutlineAddCircleOutline />
-          </div>
+          </div>}
+
         </div>
         <div className={style.formSave}>
-          <Button type='primary'>Save</Button>
+          <Button type='primary' onClick={handleSaveProduct}>Save</Button>
           <Button type='default'>Clear</Button>
         </div>
       </div>

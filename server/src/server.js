@@ -6,10 +6,12 @@ import ClientRouter from './Router/clientRoute.js'
 import ProductRouter from './Router/productRoute.js'
 import fileupload from 'express-fileupload'
 import _ from 'lodash'
+import cors from 'cors'
 
 dotenv.config()
 
 const app = express()
+app.use(cors())
 app.use(cookieParser())
 app.use(fileupload({ createParentPath: true }))
 app.use(bodyParser.json({ limit: '50mb' }))

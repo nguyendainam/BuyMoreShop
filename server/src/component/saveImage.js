@@ -67,3 +67,20 @@ export const RemoveImage = (image) => {
         }
     })
 }
+
+
+export const saveImageToFolder = (base64Data, fileName, key) => {
+    return new Promise((resolve, reject) => {
+        let newFilename = Date.now() + `_${key}` + '_' + fileName
+        const filePath = path.join('Images/product', newFilename);
+        const buffer = Buffer.from(base64Data, 'base64');
+
+        fs.writeFile(filePath, buffer, (error) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(filePath);
+            }
+        });
+    });
+}

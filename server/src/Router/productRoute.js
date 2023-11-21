@@ -4,13 +4,10 @@ import brandController from '../controller/product/brandController.js'
 import productController from '../controller/product/productController.js'
 const router = Router()
 
-// CRUD CATEGORY
-router.post('/system/cItemListCat', categoryController.createItemListCat)
-router.post('/system/createorupdateCategory', categoryController.createCategory)
-router.post(
-  '/system/createUpdateItem',
-  categoryController.createOrUpdateItemCategory
-)
+router.post('/system/CandUCategory', categoryController.createCategory)
+router.post('/system/CandUListCategory', categoryController.createItemListCat)
+router.post('/system/CandUItemsCategory', categoryController.createOrUpdateItemCategory)
+
 
 // CRUD BRAND
 
