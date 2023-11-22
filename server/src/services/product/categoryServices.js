@@ -2,24 +2,32 @@ import path, { resolve } from 'path'
 import { randomInterger } from '../../component/random.js'
 import { connectDB } from '../../connectDB/index.js'
 import mssql from 'mssql'
-import { SaveImage, RemoveImage } from '../../component/saveImage.js'
+import { saveImageToFolder } from '../../component/saveImage.js'
 
 const key = 'category'
 
 //  Category
-const createOrUpdateCategory = (data, imageCategory) => {
+const createOrUpdateCategory = data => {
+  console.log(data.action)
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.nameVI || !data.action) {
+      if (!data.NameVI || !data.action) {
         resolve({
           err: 1,
           errMessage: 'Missing data required'
         })
       } else {
-        if (data.action.toLowerCase() === 'create') {
-          let nameVI = data.nameVI
-          let nameEN = data.nameEN
-          let saveImage = await SaveImage(imageCategory.image, key)
+        if (data.action === 'create') {
+          let nameVI = data.NameVI
+          let nameEN = data.NameEN
+          let saveImage = ''
+          if (data.Image) {
+            const imageCategory = JSON.parse(data.Image)
+            let nameImg = imageCategory[0].name
+            let base64 = imageCategory[0].thumbUrl.split(';base64,').pop()
+            saveImage = await saveImageToFolder(base64, nameImg, 'category')
+          }
+
           let pool = await connectDB()
           let result = await pool
             .request()
@@ -29,8 +37,8 @@ const createOrUpdateCategory = (data, imageCategory) => {
                         INSERT INTO Category ( nameVI, nameEN, ImageCat)
                         SELECT @nameVI, @nameEN, @ImageCat
                         WHERE NOT EXISTS (
-                            SELECT 1 
-                            FROM Category 
+                            SELECT 1
+                            FROM Category
                             WHERE nameVI = @nameVI OR nameEN = @nameEN
                         )`)
 
@@ -115,11 +123,45 @@ const createOrUpdateCategory = (data, imageCategory) => {
     }
   })
 }
+const getAllCategoryServices = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let pool = await connectDB()
+      let listItemCategories = await pool
+        .request()
+        .query('SELECT * FROM Category')
+      if (listItemCategories.recordset.length > 0) {
+        resolve({
+          err: 0,
+          errMessage: 'Getting all categories successfully',
+          items: listItemCategories.recordset
+        })
+      } else {
+        resolve({
+          err: 1,
+          errMessage: 'Empty list'
+        })
+      }
+    } catch (e) {
+      reject(e)
+    }
+  })
+}
 
+/*
+ *
+ *
+ *
+ **
+ *
+ **
+ **
+ **
+ ****
+ */
 //   List ItemCategory
 
 const createOrUpdateItesmToList = data => {
-
   // console.log(data)
   return new Promise(async (resolve, reject) => {
     try {
@@ -143,9 +185,7 @@ const createOrUpdateItesmToList = data => {
               .input('idListCat', mssql.VarChar, Id)
               .input('NameVI', mssql.NVarChar, data.nameVI)
               .input('NameEN', mssql.VarChar, data.nameEN)
-              .input('IdCat', mssql.Int, data.IdCat)
-
-              .query(`
+              .input('IdCat', mssql.Int, data.IdCat).query(`
                     INSERT INTO ListCategory (idListCat, NameVI , NameEN, IdCat)
                     SELECT @idListCat, @NameVI, @NameEN , @IdCat
                     WHERE NOT EXISTS (
@@ -177,8 +217,7 @@ const createOrUpdateItesmToList = data => {
               .request()
               .input('NameVI', mssql.NVarChar, data.nameVI)
               .input('NameEN', mssql.VarChar, data.nameEN)
-              .input('IdCat', mssql.Int, data.IdCat)
-              .query(`UPDATE ListCategory 
+              .input('IdCat', mssql.Int, data.IdCat).query(`UPDATE ListCategory 
                       SET NameVI = @NameVI, NameEN = @NameEN, IdCat =@IdCat
                       WHERE idListCat  = ${data.Id}
                       AND 
@@ -313,5 +352,6 @@ const createOrUpdateItemCategory = data => {
 export default {
   createOrUpdateCategory,
   createOrUpdateItesmToList,
-  createOrUpdateItemCategory
+  createOrUpdateItemCategory,
+  getAllCategoryServices
 }

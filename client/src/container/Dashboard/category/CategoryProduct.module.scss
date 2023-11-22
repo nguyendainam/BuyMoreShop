@@ -1,0 +1,25 @@
+@import '../../../assets/style/formInput';
+
+.mainCategory {
+    width: 100%;
+    height: auto;
+    display: flex;
+    margin-top: 3%;
+
+
+    .formAddCategory {
+        width: 30%;
+        height: max-content;
+        float: left;
+
+    }
+
+    .formListCategory {
+        width: 70%;
+        min-height: 400px;
+        float: right;
+
+    }
+
+
+}

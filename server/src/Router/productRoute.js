@@ -6,14 +6,16 @@ const router = Router()
 
 router.post('/system/CandUCategory', categoryController.createCategory)
 router.post('/system/CandUListCategory', categoryController.createItemListCat)
-router.post('/system/CandUItemsCategory', categoryController.createOrUpdateItemCategory)
+router.post(
+  '/system/CandUItemsCategory',
+  categoryController.createOrUpdateItemCategory
+)
 
+router.get('/system/getAllCategory', categoryController.getAllcategory)
 
 // CRUD BRAND
 
 router.post('/system/createOrupdateBrand', brandController.createOrUpdate)
-
-
 
 // CRUD PRODUCT
 

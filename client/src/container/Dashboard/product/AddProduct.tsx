@@ -22,7 +22,7 @@ import {
 import type { RcFile, UploadProps } from 'antd/es/upload'
 import type { UploadFile } from 'antd/es/upload/interface'
 import { PlusOutlined } from '@ant-design/icons'
-import { TfiWrite } from "react-icons/tfi";
+import { TfiWrite } from 'react-icons/tfi'
 import { TextEditor } from '../../../components/textEditor'
 import FormData from 'form-data'
 import { CreateProduct } from '../../../services/product'
@@ -63,24 +63,26 @@ const uploadButton = (
 // ==================================================================================
 // ==================================================================================
 
-export default function AddProduct() {
+export default function AddProduct () {
   const [product, setproduct] = useState<IProduct>({
     nameVI: '',
     nameEN: '',
-    category: '',
-    brand: '',
-    discount: null,
+    category: '501564211',
+    brand: '542902950',
+    discount: 1,
     descVI: '',
     descEN: ''
   })
 
-  const [listInventory, setListInventory] = useState<IlistInventory[]>([{
-    size: '',
-    color: '',
-    quantity: 1,
-    price: 0,
-    Image: []
-  }])
+  const [listInventory, setListInventory] = useState<IlistInventory[]>([
+    {
+      size: '',
+      color: '',
+      quantity: 1,
+      price: 0,
+      Image: []
+    }
+  ])
 
   const newProduct: IlistInventory = {
     size: '',
@@ -96,7 +98,7 @@ export default function AddProduct() {
   const [fileList, setFileList] = useState<UploadFile[]>([])
   const [openDesc, setOpenDesc] = useState<boolean>(false)
 
-  useEffect(() => { }, [listInventory])
+  useEffect(() => {}, [listInventory])
 
   const handleCreateNew = () => {
     setListInventory(prevState => [...prevState, newProduct])
@@ -111,9 +113,7 @@ export default function AddProduct() {
         updateList.splice(key, 1)
         return updateList
       })
-
     }
-
   }
 
   const handleOnchange = (key: number, value: any, id: string) => {
@@ -236,18 +236,12 @@ export default function AddProduct() {
     formData.append(`ImageProduct`, JSON.stringify(fileList))
     formData.append('Product', JSON.stringify(product))
 
-
     const createProduct = await CreateProduct(formData)
     console.log(createProduct)
-
   }
-
-
-
 
   return (
     <div className={style.mainAddProduct}>
-
       {/* <div className={style.titleheader}>Add product</div> */}
       <div className={style.formProduct}>
         <div className={style.inputWidth}>
@@ -270,15 +264,15 @@ export default function AddProduct() {
         </div>
         <div className={style.inputWidthMin}>
           <Typography.Title level={5}> Category</Typography.Title>
-          <Select options={Category} />
+          <Select options={Category} value={'501564211'} />
         </div>
         <div className={style.inputWidthMin}>
           <Typography.Title level={5}> Brand</Typography.Title>
-          <Select options={Brand} />
+          <Select options={Brand} value={'542902950'} />
         </div>
         <div className={style.inputWidthMin}>
           <Typography.Title level={5}> Discount</Typography.Title>
-          <Select options={Discount} />
+          <Select options={Discount} value={1} />
         </div>
 
         <div className={style.inputMaxWidth}>
@@ -309,11 +303,10 @@ export default function AddProduct() {
 
         <div className={style.inputDes}>
           <div className={style.formButton}>
-            <Button type="dashed" onClick={() => setOpenDesc(!openDesc)}>
+            <Button type='dashed' onClick={() => setOpenDesc(!openDesc)}>
               <TfiWrite className={style.icon} />
-              {openDesc ? 'Hide' : 'Add'}  Description
+              {openDesc ? 'Hide' : 'Add'} Description
             </Button>
-
           </div>
           {openDesc && (
             <>
@@ -321,7 +314,7 @@ export default function AddProduct() {
                 <span>Description VI</span>
                 <TextEditor
                   handleSendContext={handleGetDesc}
-                  editorKey="descVI"
+                  editorKey='descVI'
                   content={product.descVI}
                 />
               </div>
@@ -329,7 +322,7 @@ export default function AddProduct() {
                 <span>Description EN</span>
                 <TextEditor
                   handleSendContext={handleGetDesc}
-                  editorKey="descEN"
+                  editorKey='descEN'
                   content={product.descEN}
                 />
               </div>
@@ -339,7 +332,6 @@ export default function AddProduct() {
       </div>
 
       <div className={style.formInventory}>
-
         {listInventory.map((item, index) => {
           const dataImage = listInventory[index].Image
           return (
@@ -352,7 +344,6 @@ export default function AddProduct() {
                     handleOnchange(index, options.value, 'size')
                   }
                   value={item.size}
-
                 />
               </div>
               <div className={style.inputWidthMin15}>
@@ -385,7 +376,7 @@ export default function AddProduct() {
                 />
               </div>
               <div className={style.inputWidthMax}>
-                <Typography.Title level={5}  > Image</Typography.Title>
+                <Typography.Title level={5}> Image</Typography.Title>
                 <Upload
                   listType='picture-card'
                   onChange={file => handleImageListIv(file.file, index)}
@@ -402,7 +393,11 @@ export default function AddProduct() {
                   footer={null}
                   onCancel={() => setPreviewOpen(false)}
                 >
-                  <img alt='example' style={{ width: '100%' }} src={previewImage} />
+                  <img
+                    alt='example'
+                    style={{ width: '100%' }}
+                    src={previewImage}
+                  />
                 </Modal>
               </div>
 
@@ -417,13 +412,16 @@ export default function AddProduct() {
           )
         })}
         <div className={style.addformInput}>
-          {listInventory.length >= 5 ? null : <div className={style.icon} onClick={handleCreateNew}>
-            <MdOutlineAddCircleOutline />
-          </div>}
-
+          {listInventory.length >= 5 ? null : (
+            <div className={style.icon} onClick={handleCreateNew}>
+              <MdOutlineAddCircleOutline />
+            </div>
+          )}
         </div>
         <div className={style.formSave}>
-          <Button type='primary' onClick={handleSaveProduct}>Save</Button>
+          <Button type='primary' onClick={handleSaveProduct}>
+            Save
+          </Button>
           <Button type='default'>Clear</Button>
         </div>
       </div>
