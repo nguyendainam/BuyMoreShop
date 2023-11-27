@@ -5,7 +5,9 @@
 
 .mainAddProduct {
     width: 100%;
-    height: max-content;
+    height: 100%;
+    min-height: 700px;
+    overflow-y: scroll;
     // overflow: auto;
 
 
@@ -75,10 +77,10 @@
     }
 
     .formSave {
-        width: 75%;
+        width: 85%;
         height: 80px;
         background-color: white;
-        position: absolute;
+        position: fixed;
         right: 0;
         bottom: 0;
         display: flex;
@@ -86,7 +88,7 @@
         align-items: center;
         justify-content: end;
         padding-right: 5%;
-        margin-right: 5%;
+     
         z-index: 9999999 !important;
 
         Button {

@@ -4,9 +4,15 @@ import Sider from 'antd/es/layout/Sider'
 import { Menu } from 'antd'
 import menuDashboard from '../../../components/datatest/menuDashboard'
 import { useNavigate, useParams } from 'react-router-dom'
+import React from 'react'
+import { TbLayoutSidebarLeftCollapse } from "react-icons/tb"
 // import { useEffect, useState } from 'react'
 
-export default function SidebarDashboard() {
+interface ISidebarDashBoard {
+  onClose: () => void
+}
+
+export const SidebarDashboard: React.FC<ISidebarDashBoard> = ({ onClose }) => {
   const menu = menuDashboard
   const navigate = useNavigate()
   const items = menu.map(item => {
@@ -25,10 +31,13 @@ export default function SidebarDashboard() {
   })
   const { '*': productParam } = useParams()
   const handleChanePath = key => {
-    navigate(key)
+    navigate(`/system/${key}`)
   }
   return (
     <div className={style.mainSidebar}>
+      <div className={style.openSidebar} onClick={onClose}>
+        <TbLayoutSidebarLeftCollapse />
+      </div>
       <div className={style.formLogo}>
         <img className={style.logo} src={Logo} alt='Logo' />
       </div>

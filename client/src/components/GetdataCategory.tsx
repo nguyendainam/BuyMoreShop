@@ -1,4 +1,5 @@
-import { getAllCategory, getAllListCategory } from '../services/product'
+import FormData from 'form-data'
+import { getAllCategory, getAllListCategory, getItemCatById } from '../services/product'
 
 interface ListCategoryDropdown {
   key: string | number
@@ -43,4 +44,20 @@ export const AllListCategory = async () => {
   }))
 
   return resolveData
+}
+
+
+
+export const getAllCategorybyItem = async (key?: string) => {
+
+  let keyId = 'ALL'
+  if (key) {
+    keyId = key
+  }
+
+  const formdata = new FormData()
+  formdata.append('keyId', keyId)
+  const reponse = await getItemCatById(formdata)
+  console.log(reponse)
+  return reponse.data.items
 }

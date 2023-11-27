@@ -25,7 +25,18 @@ export const CorUItemCategory = async (data: FormData) => {
   return await axios.post('/system/CandUItemsCategory', data)
 }
 
+export const getItemCatById = async (data: FormData) => {
+  return await axios.post('/system/getAllItemCategorybyId', data)
+}
+
 // PRODUCT
 export const CreateProduct = async (data: FormData) => {
   return await axios.post(`/system/createProduct`, data)
+}
+
+
+// BRANDS
+
+export const CreateorUpdateBrand = async (data: FormData) => {
+  return await axios.post('/system/createOrupdateBrand', data)
 }

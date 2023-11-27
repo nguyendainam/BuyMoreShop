@@ -23,7 +23,7 @@ interface IActionCategory {
   action: 'create' | 'update'
 }
 
-export default function CategoryProduct () {
+export default function CategoryProduct() {
   const [actionCat, setactionCat] = useState<IActionCategory>({
     action: 'create'
   })

@@ -15,6 +15,7 @@
     --scrollbar-width: 3px;
     --scrollbar-thumb-color: #0619f0;
     --scrollbar-track-color: #ffffff;
+    overflow-x: hidden;
 
     ::-webkit-scrollbar {
         width: var(--scrollbar-width) !important;

@@ -29,7 +29,7 @@ interface DataType {
   IdCategory: string
 }
 
-export default function ListCategory () {
+export default function ListCategory() {
   const [options, setOptions] = useState<IOptions[]>([])
   const [listCategory, setListCategory] = useState<IListCategory>({
     idListCat: '',

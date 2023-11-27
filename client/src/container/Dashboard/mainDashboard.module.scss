@@ -5,28 +5,53 @@
     height: 100vh;
     background-color: $background-dashboard;
     position: relative;
+    padding-left: 10%;
+
+
+
+    .openSidebar {
+        width: 40px;
+        height: 40px;
+        border: 2px solid rgb(255, 255, 255);
+        position: fixed;
+        left: 0;
+        margin-left: 2%;
+        margin-top: 3%;
+        z-index: 9999;
+        font-size: 30px;
+        cursor: pointer;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+    }
 
     .formSidebar {
-        width: 15%;
-        height: auto;
+        width: 20%;
+        height: 100%;
+        left: 0;
         float: left;
         position: fixed;
+        display: block;
+        background-color: white;
+        z-index: 9999;
+        overflow-x: hidden;
+        border: 1px solid violet;
+        transition: all 5s ease-in-out;
+      
     }
 
-    .formcontent {
-        width: 85%;
-        height: 100%;
-        float: right;
-        overflow-y: auto;
+        .formcontent {
+            width: 100%;
+            float: right;
+            height: 100%;
+    
 
-
-        .content {
-            width: 95%;
-            height: auto;
-            overflow-y: auto;
-            background-color: white;
-            min-height: 700px;
-            margin-top: 2%;
+            .content {
+                width: 100%;
+                height: 86%;
+                background-color: white;
+            }
         }
     }
-}

@@ -6,15 +6,18 @@
     align-items: center;
     padding-top: 5%;
 
+    .openSidebar {
+        margin-left: 90%; /* Adjusted margin value */
+        font-size: 20px;
+    }
 
     .formLogo {
-        width: 150px;
-        height: 120px;
+        width: 30%;
+        height: 10%;
         object-fit: contain;
         display: flex;
         align-items: center;
         justify-content: center;
-
 
         .logo {
             width: 100%;
@@ -31,14 +34,20 @@
         justify-content: center;
         align-items: center;
 
-
         &::-webkit-scrollbar {
             width: 3px;
         }
 
-
         .menuItems {
             width: 100%;
+        }
+    }
+
+    :global {
+       .ant-layout-sider-dark {
+            width: 100% !important;
+            max-width: 300px !important;
+            min-width: 100% !important;
         }
     }
 }

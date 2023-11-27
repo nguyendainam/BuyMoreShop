@@ -1,4 +1,4 @@
-import {} from 'react-icons/fa6'
+import { } from 'react-icons/fa6'
 import { HomeOutlined, AppstoreOutlined, UserOutlined } from '@ant-design/icons'
 
 interface IMenuDashboard {
@@ -61,6 +61,17 @@ export const menuDashboard: IMenuDashboard[] = [
         key: 'itemCategory',
         label: 'Item Category'
       }
+    ]
+  },
+  {
+    key: 'brand',
+    label: 'Brand',
+    icon: <AppstoreOutlined />,
+    children: [
+      {
+        key: 'brand',
+        label: 'Brands'
+      },
     ]
   },
   {
