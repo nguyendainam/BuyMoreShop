@@ -380,7 +380,7 @@ const createOrUpdateItemCategory = data => {
               .input('IdListCat', mssql.Int, data.Id_listCategory)
               .query(
                 `UPDATE ItemCategory 
-                SET nameVI =  @nameVI, nameEN = @nameEN
+                SET nameVI =  @nameVI, nameEN = @nameEN  ,IdListCat = @IdListCat
                 WHERE IdItemCat = '${data.IdItem}'
                 AND 
                 NOT EXISTS (
@@ -412,7 +412,6 @@ const createOrUpdateItemCategory = data => {
 }
 
 const getItemCategoryById = keyId => {
-  console.log(keyId)
   return new Promise(async (resolve, reject) => {
     try {
       if (!keyId) {
@@ -428,7 +427,8 @@ const getItemCategoryById = keyId => {
           L.nameVI as ListNameVI , 
           L.nameEN as ListNameEN ,
           C.nameVI as CatNameVI ,
-          C.nameEN as CatNameEN
+          C.nameEN as CatNameEN,
+          C.Id   as IdCat
           FROM ItemCategory  AS I
                     JOIN ListCategory as L ON L.idListCat = I.IdListCat
                     JOIN CATEGORY AS C ON C.Id = L.IdCat
@@ -438,7 +438,8 @@ const getItemCategoryById = keyId => {
           L.nameVI as ListNameVI , 
           L.nameEN as ListNameEN ,
           C.nameVI as CatNameVI ,
-          C.nameEN as CatNameEN          
+          C.nameEN as CatNameEN,
+          C.Id   as IdCat
           FROM ItemCategory  AS I
           JOIN ListCategory as L ON L.idListCat = I.IdListCat
           JOIN CATEGORY AS C ON C.Id = L.IdCat
