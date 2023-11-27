@@ -11,7 +11,13 @@ router.post(
   categoryController.createOrUpdateItemCategory
 )
 
+router.post(
+  '/system/getAllItemCategorybyId',
+  categoryController.getItemCategoryById
+)
+
 router.get('/system/getAllCategory', categoryController.getAllcategory)
+router.get('/system/getAllListCategory', categoryController.getAllListCategory)
 
 // CRUD BRAND
 

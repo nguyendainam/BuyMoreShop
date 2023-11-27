@@ -31,6 +31,8 @@ export const SaveImage = (data, key) => {
 }
 
 export const RemoveImage = image => {
+  console.log(image)
+
   return new Promise((resolve, reject) => {
     try {
       if (!image) {
@@ -39,18 +41,19 @@ export const RemoveImage = image => {
           errMessage: 'missing data required to delete image'
         })
       } else {
-        let newpath = __dirname + '../../../Images/' + image
+        // let newpath = __dirname + image
+        let newpath = image
         fs.unlink(newpath, err => {
           if (err) {
             resolve({
               err: 1,
               errMessage: 'No found image'
             })
-          } else
-            resolve({
-              err: 0,
-              errMessage: 'Delete Successfull'
-            })
+          } else console.log('removed image successfully')
+          resolve({
+            err: 0,
+            errMessage: 'Delete Successfull'
+          })
         })
       }
     } catch (e) {
@@ -63,13 +66,14 @@ export const saveImageToFolder = (base64Data, fileName, key) => {
   return new Promise((resolve, reject) => {
     let newFilename = Date.now() + `_${key}` + '_' + fileName
     const filePath = path.join(`Images/${key}`, newFilename)
+    const fileNameResolve = `Images/${key}/${newFilename}`
     const buffer = Buffer.from(base64Data, 'base64')
 
     fs.writeFile(filePath, buffer, error => {
       if (error) {
         reject(error)
       } else {
-        resolve(filePath)
+        resolve(fileNameResolve)
       }
     })
   })

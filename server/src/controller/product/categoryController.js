@@ -36,6 +36,17 @@ const createItemListCat = async (req, res) => {
     return res.status(400).json(e)
   }
 }
+
+const getAllListCategory = async (req, res) => {
+  try {
+    let result = await categoryServices.getAllListCategoryServices()
+    return res.status(200).json(result)
+  } catch (e) {
+    console.log(e)
+    return res.status(400).json(e)
+  }
+}
+
 /*
  *
  *
@@ -52,9 +63,21 @@ const createOrUpdateItemCategory = async (req, res) => {
   }
 }
 
+const getItemCategoryById = async (req, res) => {
+  try {
+    let result = await categoryServices.getItemCategoryById(req.body.keyId)
+    return res.status(200).json(result)
+  } catch (e) {
+    console.log(e)
+    return res.status(400).json(e)
+  }
+}
+
 export default {
   createCategory,
   createItemListCat,
   createOrUpdateItemCategory,
-  getAllcategory
+  getAllcategory,
+  getAllListCategory,
+  getItemCategoryById
 }

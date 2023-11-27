@@ -2,7 +2,7 @@ import path, { resolve } from 'path'
 import { randomInterger } from '../../component/random.js'
 import { connectDB } from '../../connectDB/index.js'
 import mssql from 'mssql'
-import { saveImageToFolder } from '../../component/saveImage.js'
+import { RemoveImage, saveImageToFolder } from '../../component/saveImage.js'
 
 const key = 'category'
 
@@ -11,15 +11,15 @@ const createOrUpdateCategory = data => {
   console.log(data.action)
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.NameVI || !data.action) {
+      if (!data || !data.action) {
         resolve({
           err: 1,
           errMessage: 'Missing data required'
         })
       } else {
         if (data.action === 'create') {
-          let nameVI = data.NameVI
-          let nameEN = data.NameEN
+          let nameVI = data.nameVI
+          let nameEN = data.nameEN
           let saveImage = ''
           if (data.Image) {
             const imageCategory = JSON.parse(data.Image)
@@ -67,37 +67,45 @@ const createOrUpdateCategory = data => {
           } else {
             const IdCategory = data.Id
             const pool = await connectDB()
-            let checkExist = await pool.request()
-              .query(`SELECT * FROM ListCategory 
-                                    WHERE idListCat = '${IdCategory}'`)
+            let checkExist = await pool.request().query(`SELECT * FROM Category
+                                    WHERE Id = '${IdCategory}'`)
+
             if (checkExist.rowsAffected[0] === 1) {
               let oldImage = checkExist.recordset[0].ImageCat
               let nameEN = data.nameEN
               let nameVI = data.nameVI
-              let newImage = imageCategory
-                ? await SaveImage(imageCategory.image, key)
-                : oldImage
+              let newImage = ''
 
+              if (JSON.parse(data.Image).length > 0) {
+                const imageCategory = JSON.parse(data.Image)
+                let nameImg = imageCategory[0].name
+                let base64 = imageCategory[0].thumbUrl.split(';base64,').pop()
+                newImage = await saveImageToFolder(base64, nameImg, 'category')
+              }
+
+              let saveImage =
+                JSON.parse(data.Image).length > 0 ? newImage : oldImage
+              console.log('Ole Image', oldImage)
+              console.log('new Image', newImage)
               let result = await pool
                 .request()
                 .input('nameVI', mssql.NVarChar, nameVI)
                 .input('nameEN', mssql.VarChar, nameEN)
-                .input('ImageCat', mssql.VarChar, newImage).query(`
-                                        UPDATE Category 
+                .input('ImageCat', mssql.VarChar, saveImage).query(`
+                                        UPDATE Category
                                         SET nameVI = @nameVI , nameEN =@nameEN, ImageCat = @ImageCat
                                         WHERE Id = '${IdCategory}'
                                         AND
                                         NOT EXISTS (
-                                            SELECT 1 FROM  Category AS L WHERE (L.nameVI = @nameVI OR L.nameEN =@nameEN)
-                                            AND L.idListCat <> '${IdCategory}'
+                                            SELECT 1 FROM  Category AS C WHERE (C.nameVI = @nameVI OR C.nameEN =@nameEN)
+                                            AND C.Id <> '${IdCategory}'
                                        )`)
-
               if (result.rowsAffected[0] === 1) {
                 resolve({
                   err: 0,
                   errMessage: 'Update Successfull'
                 })
-                if (imageCategory && oldImage) {
+                if (newImage && oldImage) {
                   await RemoveImage(oldImage)
                 }
               } else {
@@ -105,7 +113,7 @@ const createOrUpdateCategory = data => {
                   err: 2,
                   errMessage: 'Update failed'
                 })
-                if (imageCategory) {
+                if (newImage) {
                   await RemoveImage(newImage)
                 }
               }
@@ -213,18 +221,24 @@ const createOrUpdateItesmToList = data => {
             })
           } else {
             const pool = await connectDB()
-            let result = await pool
+
+            console.log(data)
+            const validateIdCat = parseInt(data.IdCat)
+            const result = await pool
               .request()
               .input('NameVI', mssql.NVarChar, data.nameVI)
               .input('NameEN', mssql.VarChar, data.nameEN)
-              .input('IdCat', mssql.Int, data.IdCat).query(`UPDATE ListCategory 
-                      SET NameVI = @NameVI, NameEN = @NameEN, IdCat =@IdCat
-                      WHERE idListCat  = ${data.Id}
-                      AND 
-                      NOT EXISTS(
-                        SELECT 1 FROM ListCategory AS C WHERE (C.NameVI = @NameVI OR C.NameEN = @NameEN)
-                        AND C.IdCat = '${data.IdCat}'
-                      ) `)
+              .input('IdCat', mssql.Int, validateIdCat).query(`
+          UPDATE ListCategory
+          SET NameVI = @NameVI, NameEN = @NameEN, IdCat = @IdCat
+          WHERE idListCat = '${data.Id}'
+          AND NOT EXISTS (
+            SELECT 1 FROM ListCategory AS L
+            WHERE (L.NameVI = @NameVI  AND L.NameEN = @NameEN)
+            AND L.IdCat = @IdCat
+          )`)
+
+            console.log(result)
             if (result.rowsAffected[0] === 1) {
               resolve({
                 err: 0,
@@ -245,7 +259,55 @@ const createOrUpdateItesmToList = data => {
   })
 }
 
-// END ITEMS CATEGORY
+const getAllListCategoryServices = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let pool = await connectDB()
+      let listItemCategories = await pool.request().query(`SELECT 
+                C.NameVI as NameVICategory ,
+                C.NameEN as NameENCategory,
+                ListCategory.* FROM ListCategory 
+                JOIN Category as C ON C.Id = ListCategory.IdCat
+        `)
+      if (listItemCategories.recordset.length > 0) {
+        resolve({
+          err: 0,
+          errMessage: 'Getting all categories successfully',
+          items: listItemCategories.recordset
+        })
+      } else {
+        resolve({
+          err: 1,
+          errMessage: 'Empty list'
+        })
+      }
+    } catch (e) {
+      reject(e)
+    }
+  })
+}
+
+// const getListCatebyIdCat = id => {
+//   return new Promise(async (resolve, reject) => {
+//     try {
+//       if (!id) {
+//         resolve({
+//           err: -1,
+//           errMessage: 'Missing data required'
+//         })
+//       } else {
+//         let pool = await connectDB()
+//         let query = `SELECT * FROM  ListCategory WHERE IdCat = '${id}'`
+//         let result = await pool.query(query)
+//         resolve(result)
+//       }
+//     } catch (e) {
+//       reject(e)
+//     }
+//   })
+// }
+
+// END LIST CATEGORY
 
 // ITEM CATEGORY
 
@@ -349,9 +411,68 @@ const createOrUpdateItemCategory = data => {
   })
 }
 
+const getItemCategoryById = keyId => {
+  console.log(keyId)
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!keyId) {
+        resolve({
+          err: -1,
+          errMessage: 'Missing data required'
+        })
+      } else {
+        let pool = await connectDB()
+        let query = ''
+        if (keyId.toLowerCase() === 'all') {
+          query = `SELECT I.* , 
+          L.nameVI as ListNameVI , 
+          L.nameEN as ListNameEN ,
+          C.nameVI as CatNameVI ,
+          C.nameEN as CatNameEN
+          FROM ItemCategory  AS I
+                    JOIN ListCategory as L ON L.idListCat = I.IdListCat
+                    JOIN CATEGORY AS C ON C.Id = L.IdCat
+           `
+        } else {
+          query = `SELECT I.* , 
+          L.nameVI as ListNameVI , 
+          L.nameEN as ListNameEN ,
+          C.nameVI as CatNameVI ,
+          C.nameEN as CatNameEN          
+          FROM ItemCategory  AS I
+          JOIN ListCategory as L ON L.idListCat = I.IdListCat
+          JOIN CATEGORY AS C ON C.Id = L.IdCat
+          WHERE((I.idListCat = '${keyId}'))
+
+           `
+        }
+
+        const result = await pool.query(query)
+        console.log(result.rowsAffected[0])
+        if (result.rowsAffected[0] > 0) {
+          resolve({
+            err: 0,
+            errMessage: 'Get Items category successfully',
+            items: result.recordset
+          })
+        } else {
+          resolve({
+            err: 1,
+            errMessage: 'Get Items category failed'
+          })
+        }
+      }
+    } catch (e) {
+      reject(e)
+    }
+  })
+}
+
 export default {
   createOrUpdateCategory,
   createOrUpdateItesmToList,
   createOrUpdateItemCategory,
-  getAllCategoryServices
+  getAllCategoryServices,
+  getAllListCategoryServices,
+  getItemCategoryById
 }

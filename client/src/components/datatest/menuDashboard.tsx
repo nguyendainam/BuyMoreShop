@@ -56,8 +56,9 @@ export const menuDashboard: IMenuDashboard[] = [
         key: 'listCategory',
         label: 'List Categories'
       },
+
       {
-        key: 'ItemCategory',
+        key: 'itemCategory',
         label: 'Item Category'
       }
     ]
