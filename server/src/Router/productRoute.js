@@ -22,7 +22,7 @@ router.get('/system/getAllListCategory', categoryController.getAllListCategory)
 // CRUD BRAND
 
 router.post('/system/createOrupdateBrand', brandController.createOrUpdate)
-
+router.get('/system/getAllBrand', brandController.getAllBrands)
 // CRUD PRODUCT
 
 router.post('/system/createProduct', productController.createProduct)

@@ -7,8 +7,9 @@ import CategoryProduct from '../container/Dashboard/category/CategoryProduct'
 import ItemCategory from '../container/Dashboard/category/ItemCategory'
 import ListCategory from '../container/Dashboard/category/ListCategory'
 import Brand from '../container/Dashboard/brand/Brand'
+import { ListBrand } from '../container/Dashboard/brand/ListBrand'
 
-export default function SystemRouter() {
+export default function SystemRouter () {
   return (
     <Routes>
       <Route path='/' element={<Welcome />} />
@@ -19,6 +20,7 @@ export default function SystemRouter() {
       <Route path='listCategory' element={<ListCategory />} />
       <Route path='itemCategory' element={<ItemCategory />} />
       <Route path='brand' element={<Brand />} />
+      <Route path='listBrand' element={<ListBrand />} />
     </Routes>
   )
 }
