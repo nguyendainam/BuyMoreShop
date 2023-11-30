@@ -11,11 +11,6 @@ import FormData from 'form-data'
 import Column from 'antd/es/table/Column'
 import ColumnGroup from 'antd/es/table/ColumnGroup'
 import { MdDelete, MdEditSquare } from 'react-icons/md'
-// import FormData from 'form-data'
-// import { CorUListCategory } from '../../../services/product'
-// import { AllListCategory } from '../../../components/GetdataCategory'
-// import Column from 'antd/es/table/Column'
-// import { MdDelete, MdEditSquare } from 'react-icons/md'
 
 interface IOptions {
   value: string
@@ -28,7 +23,6 @@ interface IitemCategory {
   IdCat: string
   nameVI: string
   nameEN: string
-
 }
 
 interface DataType {
@@ -39,7 +33,7 @@ interface DataType {
   IdCategory: string
 }
 
-export default function ItemsCategory() {
+export default function ItemsCategory () {
   const [options, setOptions] = useState<IOptions[]>([])
   const [optionsList, setOptionsList] = useState<IOptions[]>([])
   const [openSelect, setOpenSelect] = useState<boolean>(true)
@@ -82,13 +76,11 @@ export default function ItemsCategory() {
       label: item.nameEN
     }))
 
-
     setItemCategory(prevState => ({
       ...prevState,
       IdListCat: ''
     }))
     setOptionsList(newOptionList)
-
 
     if (listCatById.length > 0) {
       setItemCategory(prevState => ({
@@ -96,13 +88,10 @@ export default function ItemsCategory() {
         IdListCat: ''
       }))
       setOpenSelect(false)
-
     } else {
       setOptionsList([])
       setOpenSelect(true)
     }
-
-
   }
 
   const handleOnchange = (value: string, id: string) => {
@@ -152,7 +141,6 @@ export default function ItemsCategory() {
       } else {
         message.error('Create Items Failure')
       }
-
     }
   }
 
@@ -167,9 +155,7 @@ export default function ItemsCategory() {
     hanleGetListItembyId()
   }, [])
 
-
-  const handleOnEdit = (data) => {
-
+  const handleOnEdit = data => {
     const listCatById = dataListCat.filter(
       item => item.IdCat.toString() === data.IdCat.toString()
     )
@@ -200,7 +186,6 @@ export default function ItemsCategory() {
       nameVI: ''
     })
   }
-
 
   return (
     <div className={styles.mainListCategory}>
@@ -244,7 +229,9 @@ export default function ItemsCategory() {
           <Button type='primary' onClick={handleOnSave}>
             {action}
           </Button>
-          <Button type='dashed' style={{ marginLeft: '5px' }}
+          <Button
+            type='dashed'
+            style={{ marginLeft: '5px' }}
             onClick={handleClear}
           >
             Clear
@@ -278,14 +265,11 @@ export default function ItemsCategory() {
                 </div>
 
                 <div className={styles.buttonDelete}>
-                  <MdDelete
-
-                  />
+                  <MdDelete />
                 </div>
               </Space>
             )}
           />
-
         </Table>
       </div>
     </div>

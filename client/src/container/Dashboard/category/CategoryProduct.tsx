@@ -23,7 +23,7 @@ interface IActionCategory {
   action: 'create' | 'update'
 }
 
-export default function CategoryProduct() {
+export default function CategoryProduct () {
   const [actionCat, setactionCat] = useState<IActionCategory>({
     action: 'create'
   })
@@ -129,8 +129,6 @@ export default function CategoryProduct() {
 
   return (
     <>
-      <div className={style.formMaxWidth}>Category</div>
-
       <div className={style.mainCategory}>
         <div className={style.formAddCategory}>
           <div className={style.inputMaxWidth}>

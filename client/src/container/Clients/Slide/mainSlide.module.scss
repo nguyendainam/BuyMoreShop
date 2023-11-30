@@ -1,0 +1,82 @@
+.mainSlide{
+    width: 100%;
+    height: 35%;
+    background-color: white;
+    display: grid;
+    grid-template-columns: 65% 35%;
+    padding-left: 2%;
+    padding-right: 2%;
+
+    .itemSlide1 {
+        height: 100%;
+        align-items: center;
+      
+    
+        .carouselItem {
+            width: 100%;
+            height: 350px;
+            background-color: rgb(58, 57, 57);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            object-fit: contain;
+            color: white;
+
+        }
+    }
+
+    .itemSlide2 {
+        height: 100%;
+        border: 1px solid darkcyan;
+        margin-left: 1%;
+        display: grid;
+        grid-template-columns: 100%;
+        grid-template-rows: 50% 50%;
+
+        .itemChild {
+            border: 1px solid gold;
+            .imageChild{
+                width: 100%;
+                // height: 100%;
+                background-color: gray;
+                object-fit: contain;
+            }
+        }
+    }
+
+  
+}
+.Featured_categories{
+    width: 100%;
+    height: 20%;
+    background-color: white;
+    padding-left: 5%;
+  
+    padding-top: 1%;
+    border: 1 px solid darkblue;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    
+
+    .itemCat{
+        width: 10%;
+        height: 40%;
+        border: 1px solid red;
+        margin: 3px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .image {
+            width: 60%;
+            height: 70%;
+            border: 1px solid darkblue;
+            object-fit: contain;
+        }
+        .title {
+            font-size: 12px;
+        }
+    }
+}

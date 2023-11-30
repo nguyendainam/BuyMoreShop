@@ -1,5 +1,6 @@
 import {} from 'react-icons/fa6'
 import { HomeOutlined, AppstoreOutlined, UserOutlined } from '@ant-design/icons'
+import { CiDiscount1 } from 'react-icons/ci'
 
 interface IMenuDashboard {
   key: string
@@ -73,8 +74,24 @@ export const menuDashboard: IMenuDashboard[] = [
         label: 'Brands'
       },
       {
-        key: 'listBrand',
+        key: 'listbrand',
         label: 'List Brands'
+      }
+    ]
+  },
+
+  {
+    key: 'discount',
+    label: 'Discount',
+    icon: <CiDiscount1 />,
+    children: [
+      {
+        key: 'discount',
+        label: 'Discout'
+      },
+      {
+        key: 'listdiscount',
+        label: 'List Discount'
       }
     ]
   },
