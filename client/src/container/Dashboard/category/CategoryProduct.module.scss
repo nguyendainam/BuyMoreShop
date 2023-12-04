@@ -3,14 +3,13 @@
 
 .mainCategory {
     width: 100%;
-    height: auto;
     display: flex;
     margin-top: 3%;
 
 
     .formAddCategory {
         width: 30%;
-        min-height: 400px;
+        min-height: 500px;
         float: left;
         border: 2px solid gainsboro;
         overflow-x: auto;
@@ -30,7 +29,7 @@
 
     .formListCategory {
         width: 70%;
-        min-height: 400px;
+        min-height: 500px;
         float: right;
         border: 1px solid gainsboro;
         max-height: 500px;

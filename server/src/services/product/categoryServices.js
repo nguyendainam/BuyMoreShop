@@ -1,8 +1,8 @@
 import path, { resolve } from 'path'
-import { randomInterger } from '../../component/random.js'
+import { generateRandomString, randomInterger } from '../../component/random.js'
 import { connectDB } from '../../connectDB/index.js'
 import mssql from 'mssql'
-import { RemoveImage, saveImageToFolder } from '../../component/saveImage.js'
+import { RemoveImage, SaveImage, saveImageToFolder } from '../../component/saveImage.js'
 
 const key = 'category'
 
@@ -449,7 +449,6 @@ const getItemCategoryById = keyId => {
         }
 
         const result = await pool.query(query)
-        console.log(result.rowsAffected[0])
         if (result.rowsAffected[0] > 0) {
           resolve({
             err: 0,
@@ -469,11 +468,167 @@ const getItemCategoryById = keyId => {
   })
 }
 
+
+const createOrUpdateProductType = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data || !data.action) {
+        resolve({
+          err: -1,
+          errMessage: 'Missing data required'
+        })
+      } else {
+        if (data.action.toLowerCase() === 'create') {
+          const Id = generateRandomString(5)
+          const NameVI = data.nameVI
+          const NameEN = data.nameEN
+          const IsShow = data.isShow ? data.isShow : 1
+
+          let saveImage = ''
+          if (data.Image) {
+            let imgProductType = JSON.parse(data.Image)
+            let name = imgProductType[0].name
+            let base64 = imgProductType[0].thumbUrl.split(';base64,').pop()
+            saveImage = await saveImageToFolder(base64, name, 'productType')
+          }
+          let pool = await connectDB()
+          let result = await pool.request()
+            .input('Id', mssql.VarChar, Id)
+            .input('NameVI', mssql.NVarChar, NameVI)
+            .input('NameEN', mssql.VarChar, NameEN)
+            .input('Image', mssql.VarChar, saveImage)
+            .input('IsShow', mssql.Bit, IsShow)
+            .query(`INSERT INTO Product_Type (Id, NameVI, NameEN, Image, IsShow)
+                  SELECT @Id, @NameVI , @NameEN , @Image , @IsShow
+                  WHERE NOT EXISTS (
+                    SELECT 1 
+                    FROM Product_Type as P
+                    WHERE (P.NameVI = @NameVI AND P.NameEN = @NameEN)
+                    AND P.Id <> @Id
+                  )`)
+          if (result.rowsAffected[0] === 1) {
+            resolve({
+              err: 0,
+              errMessage: 'Create data success'
+            })
+          } else {
+            resolve({
+              err: 1,
+              errMessage: 'Create failed'
+            })
+            await RemoveImage(saveImage)
+          }
+        } else if (data.action.toLowerCase() === 'update') {
+          if (!data.Id) {
+            resolve({
+              err: -1,
+              errMessage: 'Missing data required'
+            })
+
+          } else {
+            const Id = data.Id
+            const pool = await connectDB()
+            let checkProduct_Type = await pool.query(`SELECT 1 FROM Product_Type WHERE Id = '${Id}' `)
+            if (checkProduct_Type.recordset.length > 0) {
+              let oldImage = checkProduct_Type.recordset[0].Image
+              let saveImage = ''
+              if (data.Image) {
+                let imgProductType = JSON.parse(data.Image)
+                let name = imgProductType[0].name
+                let base64 = imgProductType[0].thumbUrl.split(';base64,').pop()
+                saveImage = await saveImageToFolder(base64, name, 'productType')
+              }
+              const newImage = saveImage || oldImage
+              const NameVI = data.nameVI
+              const NameEN = data.nameEN
+              const IsShow = data.isShow ? data.isShow : 1
+
+              let result = await pool.request()
+                .input('Id', mssql.VarChar, Id)
+                .input('NameVI', mssql.NVarChar, NameVI)
+                .input('NameEN', mssql.VarChar, NameEN)
+                .input('Image', mssql.VarChar, newImage)
+                .input('IsShow', mssql.Bit, IsShow)
+                .query(`
+                  UPDATE Product_Type  
+                  SET   NameVI = @NameVI, NameEN = @NameEN , Image = @Image , IsShow =@IsShow
+                  WHERE Id = @Id
+                 AND NOT EXISTS
+                  (
+                    SELECT 1 
+                    FROM Product_Type as P
+                    WHERE (P.NameVI = @NameVI OR P.NameEN = @NameEN)
+                    AND P.Id <> @Id )
+                `)
+              if (result.rowsAffected[0] > 0) {
+                resolve({
+                  err: 0,
+                  errMessage: 'Update Success full'
+                })
+                if (newImage && oldImage) {
+                  RemoveImage(oldImage)
+                }
+              } else {
+                resolve({
+                  err: 1,
+                  errMessage: 'Update Failed'
+                })
+                RemoveImage(saveImage)
+              }
+            } else {
+              resolve({
+                err: 2,
+                errMessage: 'Data Product Type Empty'
+              })
+            }
+          }
+        } else {
+          resolve({
+            err: -1,
+            errMessage: 'Invalid action'
+          })
+        }
+      }
+
+    } catch (e) {
+      reject(e)
+    }
+  })
+}
+
+const getAllProductType = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let pool = await connectDB()
+      let result = await pool.query(`SELECT * FROM Product_Type `)
+      if (result) {
+        resolve({
+          err: 0,
+          errMessage: 'Get data successful',
+          items: result.recordset
+        })
+      } else {
+        resolve({
+          err: 1,
+          errMessage: 'Get data faild'
+
+        })
+      }
+
+    } catch (e) {
+      reject(e)
+    }
+  })
+}
+
+
 export default {
   createOrUpdateCategory,
   createOrUpdateItesmToList,
   createOrUpdateItemCategory,
   getAllCategoryServices,
   getAllListCategoryServices,
-  getItemCategoryById
+  getItemCategoryById,
+  createOrUpdateProductType,
+  getAllProductType,
 }

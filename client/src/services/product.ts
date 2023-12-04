@@ -25,8 +25,16 @@ export const CorUItemCategory = async (data: FormData) => {
   return await axios.post('/system/CandUItemsCategory', data)
 }
 
-export const getItemCatById = async (data: FormData) => {
-  return await axios.post('/system/getAllItemCategorybyId', data)
+export const getItemCatById = async (key?: string) => {
+  return await axios.get(`/system/getAllItemCategorybyId?key=${key}`)
+}
+
+export const createOrUpdatePrType = async (data: FormData) => {
+  return await axios.post('/system/creOrUpdProductType', data)
+}
+
+export const getAllProductType = async () => {
+  return await axios.get('/system/getAllProductType')
 }
 
 // PRODUCT
@@ -42,4 +50,23 @@ export const CreateorUpdateBrand = async (data: FormData) => {
 
 export const GetAllBrands = async () => {
   return await axios.get('/system/getAllBrand')
+}
+
+//  DISCOUNT
+export const getAllDiscount = async () => {
+  return await axios.get('/system/getAllDiscount')
+}
+
+export const createOrUpdateDiscount = async (data: FormData) => {
+  return await axios.post('/system/createOrUpdateDiscount', data)
+}
+
+// ui
+
+export const createNewSlide = async (data: FormData) => {
+  return await axios.post('/system/ui/createCarousel', data)
+}
+
+export const getImageCarousel = async (key: string) => {
+  return await axios.get(`/system/ui/getImgCarousel?key=${key}`)
 }

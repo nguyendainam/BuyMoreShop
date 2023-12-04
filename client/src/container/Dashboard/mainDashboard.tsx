@@ -1,21 +1,24 @@
-// MainDashboard.jsx
-import React, { useState } from 'react'
-import style from './mainDashboard.module.scss'
-import { SidebarDashboard } from './sidebar/sidebarDashboard'
-import Header from './header/headerDashboard'
-import SystemRouter from '../../router/systemRouter'
-import { FloatButton } from 'antd';
-import { GoSidebarCollapse } from "react-icons/go";
+import React, { useState } from 'react';
+import style from './mainDashboard.module.scss';
+import { SidebarDashboard } from './sidebar/sidebarDashboard';
+import Header from './header/headerDashboard';
+import SystemRouter from '../../router/systemRouter';
+import { GoSidebarCollapse } from 'react-icons/go';
+
 const MainDashboard: React.FC = () => {
-
-  const [openSidebar, setOpenSidebar] = useState<boolean>(false)
-
+  const [openSidebar, setOpenSidebar] = useState<boolean>(false);
 
   const handleOnChange = () => {
-    setOpenSidebar(!openSidebar)
-  }
+    setOpenSidebar(!openSidebar);
+  };
 
+  const handleOnFocus = () => {
+    setOpenSidebar(false);
+  };
 
+  const handleOnBlur = () => {
+    setOpenSidebar(false);
+  };
 
   return (
     <div className={style.mainDashboard}>
@@ -26,10 +29,14 @@ const MainDashboard: React.FC = () => {
         <div className={style.formSidebar}>
           <SidebarDashboard onClose={handleOnChange} />
         </div>
-
       )}
 
-      <div className={style.formcontent}>
+      <div
+        className={style.formcontent}
+        tabIndex={0}
+        onFocus={openSidebar ? handleOnFocus : undefined}
+        onBlur={handleOnBlur}
+      >
         <div className={style.formHeader}>
           <Header />
         </div>
@@ -38,7 +45,7 @@ const MainDashboard: React.FC = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default MainDashboard
+export default MainDashboard;

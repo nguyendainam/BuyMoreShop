@@ -65,7 +65,27 @@ const createOrUpdateItemCategory = async (req, res) => {
 
 const getItemCategoryById = async (req, res) => {
   try {
-    let result = await categoryServices.getItemCategoryById(req.body.keyId)
+    let result = await categoryServices.getItemCategoryById(req.query.key)
+    return res.status(200).json(result)
+  } catch (e) {
+    console.log(e)
+    return res.status(400).json(e)
+  }
+}
+
+const ProductType = async (req, res) => {
+  try {
+    let result = await categoryServices.createOrUpdateProductType(req.body)
+    return res.status(200).json(result)
+  } catch (e) {
+    console.log(e)
+    return res.status(400).json(e)
+  }
+}
+
+const getAllProductType = async (req, res) => {
+  try {
+    let result = await categoryServices.getAllProductType()
     return res.status(200).json(result)
   } catch (e) {
     console.log(e)
@@ -79,5 +99,7 @@ export default {
   createOrUpdateItemCategory,
   getAllcategory,
   getAllListCategory,
-  getItemCategoryById
+  getItemCategoryById,
+  ProductType,
+  getAllProductType
 }

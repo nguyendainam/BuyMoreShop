@@ -8,8 +8,11 @@ import ItemCategory from '../container/Dashboard/category/ItemCategory'
 import ListCategory from '../container/Dashboard/category/ListCategory'
 import Brand from '../container/Dashboard/brand/Brand'
 import ListBrand from '../container/Dashboard/brand/ListBrand'
+import Discount from '../container/Dashboard/discount/Discount'
+import ManageCarousel from '../container/Dashboard/manageUI/List_Carousel/manageCarousel'
+import ProductType from '../container/Dashboard/category/ProductType'
 
-export default function SystemRouter () {
+export default function SystemRouter() {
   return (
     <Routes>
       <Route path='/' element={<Welcome />} />
@@ -21,6 +24,9 @@ export default function SystemRouter () {
       <Route path='itemCategory' element={<ItemCategory />} />
       <Route path='brand' element={<Brand />} />
       <Route path='listbrand' element={<ListBrand />} />
+      <Route path='discount' element={<Discount />} />
+      <Route path='manage-carousel' element={<ManageCarousel />} />
+      <Route path='productType' element={<ProductType />} />
     </Routes>
   )
 }

@@ -33,7 +33,7 @@ interface DataType {
   IdCategory: string
 }
 
-export default function ItemsCategory () {
+export default function ItemsCategory() {
   const [options, setOptions] = useState<IOptions[]>([])
   const [optionsList, setOptionsList] = useState<IOptions[]>([])
   const [openSelect, setOpenSelect] = useState<boolean>(true)

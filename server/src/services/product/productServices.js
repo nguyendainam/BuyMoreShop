@@ -17,7 +17,10 @@ const createProduct = product => {
         const imageShow = JSON.parse(product.ImageProduct)
         const listInventory = JSON.parse(product.Inventory)
 
-        console.log(aboutProduct)
+
+
+        // console.log(listInventory)
+        
         const IdProduct = Date.now() + '@' + uuidv4()
         const nameVI = aboutProduct.nameVI
         const nameEN = aboutProduct.nameEN
@@ -66,13 +69,46 @@ const createProduct = product => {
                     (@TypeImage, @Image, @Id_Product)
                     `
                   )
-                console.log(resultImgPr)
+               
               }
             })
           )
+
+          let saveProductInventory = await Promise.all(
+            listInventory.map(async item => {
+
+                const IdInventory = Date.now() + 'I@' + uuidv4()
+                const size = item.size
+                const color = item.color
+                const quantity = item.quantity
+                const price = item.price
+                const screenSizeOptions = item.screenSizeOptions
+                const memoryOptions = item.memoryOptions
+                const scanFrequency = item.scanFrequency
+                const screenType = item.screenType
+
+                let resultInventory = await pool.request().input()
+
+
+                const Image = item.Image
+
+
+
+
+
+            })
+
+
+          )
+
+         
+       
+
+
+
         }
 
-        console.log(IdProduct)
+    
 
         resolve('oke')
 

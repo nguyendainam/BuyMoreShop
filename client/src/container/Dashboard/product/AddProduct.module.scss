@@ -12,15 +12,17 @@
 
 
     .formProduct {
-        width: 55%;
+        width: 100%;
         display: flex;
         flex-wrap: wrap;
         float: left;
+
+     
     }
 
 
     .formInventory {
-        width: 40%;
+        width: 100%;
         float: right;
         height: auto;
         padding-bottom: 15%;
@@ -34,11 +36,29 @@
             border: 1px solid $lineblue;
             border-radius: 20px;
             margin: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-self: center;
             position: relative;
+
+
+            .formaddOption{
+                width: 50%;
+                height: auto;
+                margin-left: 2%;
+                border: 1px solid red;  
+                display: flex;
+                align-items: center;           
+                 
+            }
+
+
+
+            .listOption{
+                width: 100%;
+                height: auto;
+                display: flex;
+                flex-wrap: wrap;
+                margin-top: 2%;
+            }
+
 
             .cancelForm {
                 width: 30px;
@@ -77,7 +97,7 @@
     }
 
     .formSave {
-        width: 85%;
+        width: 90%;
         height: 80px;
         background-color: white;
         position: fixed;
@@ -89,7 +109,7 @@
         justify-content: end;
         padding-right: 5%;
      
-        z-index: 9999999 !important;
+        z-index: 99 !important;
 
         Button {
             margin-left: 5px;
@@ -99,12 +119,14 @@
     .inputDes{
         width: 100%;
         height: auto;
-        margin-bottom: 300px;
+        margin-bottom: 100px;
+
 
         .formButton {
             width: 100%;
             height: max-content;
             display: flex; 
+            
             Button{
                 width: max-content;
                 height: 60px;

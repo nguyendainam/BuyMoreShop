@@ -31,8 +31,6 @@ export const SaveImage = (data, key) => {
 }
 
 export const RemoveImage = image => {
-  console.log(image)
-
   return new Promise((resolve, reject) => {
     try {
       if (!image) {

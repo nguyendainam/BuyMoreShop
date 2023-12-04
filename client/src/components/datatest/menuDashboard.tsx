@@ -1,7 +1,7 @@
-import {} from 'react-icons/fa6'
+import { } from 'react-icons/fa6'
 import { HomeOutlined, AppstoreOutlined, UserOutlined } from '@ant-design/icons'
 import { CiDiscount1 } from 'react-icons/ci'
-
+import { FaPaintbrush } from "react-icons/fa6";
 interface IMenuDashboard {
   key: string
   label: string
@@ -62,6 +62,11 @@ export const menuDashboard: IMenuDashboard[] = [
         key: 'itemCategory',
         label: 'Item Category'
       }
+      ,
+      {
+        key: 'productType',
+        label: 'Product Type'
+      }
     ]
   },
   {
@@ -88,10 +93,6 @@ export const menuDashboard: IMenuDashboard[] = [
       {
         key: 'discount',
         label: 'Discout'
-      },
-      {
-        key: 'listdiscount',
-        label: 'List Discount'
       }
     ]
   },
@@ -111,6 +112,18 @@ export const menuDashboard: IMenuDashboard[] = [
       {
         key: 'User 2',
         label: 'User 2'
+      }
+    ]
+  }
+  ,
+  {
+    key: 'ui',
+    label: 'Manage UI',
+    icon: <FaPaintbrush />,
+    children: [
+      {
+        key: 'manage-carousel',
+        label: 'Carousel Image'
       }
     ]
   }

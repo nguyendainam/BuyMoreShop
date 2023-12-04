@@ -7,3 +7,20 @@ $background-dashboard: #F7FAFF;
 $iconColor: #2373dc;
 $iconEdit: #81D8BB;
 $iconDelete: red;
+$iconGreen: #0abd82;
+$iconGreenStr: #045436;
+$bggray:   #f0f0f0;
+
+.iconGreen {
+    color: $iconGreen;
+}
+.iconBlue{
+    color: $blueColor;
+}
+.iconRed{
+    color: $iconDelete;
+}
+
+.iconstrongGreen{
+    color: $iconGreenStr;
+}
