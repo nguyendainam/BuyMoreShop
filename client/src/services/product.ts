@@ -42,6 +42,11 @@ export const CreateProduct = async (data: FormData) => {
   return await axios.post(`/system/createProduct`, data)
 }
 
+
+export const getAllProduct = async () => {
+  return await axios.get(`/system/getAllProduct`)
+}
+
 // BRANDS
 
 export const CreateorUpdateBrand = async (data: FormData) => {

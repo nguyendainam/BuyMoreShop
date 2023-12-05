@@ -24,14 +24,13 @@ import FormData from "form-data";
 import { CreateProduct } from "../../../services/product";
 import { getListDiscount } from "../../../components/Discount";
 import {
-  AllListCategory,
+
   AllProductType,
   getAllCategorybyItem,
 } from "../../../components/GetdataCategory";
 import { GetAllListsBrand } from "../../../components/GetBrand";
 import selectDrop from "../../../components/datatest/Select";
 
-const { TextArea } = Input;
 const { Option } = Select;
 
 // =================================================================  //
@@ -70,11 +69,6 @@ const uploadButton = (
     <div style={{ marginTop: 8 }}>Upload</div>
   </div>
 );
-
-interface IOptions {
-  value: string;
-  label: string;
-}
 
 // ==================================================================================
 // ==================================================================================
@@ -123,7 +117,7 @@ export default function AddProduct() {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [openDesc, setOpenDesc] = useState<boolean>(false);
 
-  useEffect(() => {}, [listInventory]);
+  useEffect(() => { }, [listInventory]);
 
   const handleCreateNew = () => {
     setListInventory((prevState) => [...prevState, newProduct]);
@@ -161,12 +155,12 @@ export default function AddProduct() {
       file.type === "image/png" ||
       file.type === "image/jpg";
     if (!isJpgorPng) {
-      console.error("You can only upload JPG or PNG files");
+      message.error("You can only upload JPG or PNG files");
       return false;
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
-      console.error("Images must be smaller than 2MB");
+      message.error("Images must be smaller than 2MB");
       return false;
     }
 
@@ -264,7 +258,11 @@ export default function AddProduct() {
     formData.append("Product", JSON.stringify(product));
 
     const createProduct = await CreateProduct(formData);
-    console.log(createProduct);
+    if (createProduct.data.err === 0) {
+      message.success(createProduct.data.errMessage)
+    } else {
+      message.error(createProduct.data.errMessage)
+    }
   };
 
   /**
@@ -344,10 +342,7 @@ export default function AddProduct() {
     setOptionProduct(option);
   };
 
-  const handleOnchangeProductInven = (value: string, key) => {
-    console.log("value is", value);
-    console.log("key", key);
-  };
+
 
   /**
    *
@@ -517,11 +512,7 @@ export default function AddProduct() {
               <div className={style.listOption}>
                 {optionProduct.map((item1, index1) => {
                   // const selectedOption = selectDrop.OptionsPr.find((option) => option.value === item1);
-
-                  console.log(item1);
-
                   const arr = selectDrop[item1.value];
-
                   return (
                     <div className={style.inputWidthMin} key={index1}>
                       <Typography.Title level={5}>

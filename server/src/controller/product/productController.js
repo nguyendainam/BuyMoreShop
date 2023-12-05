@@ -10,8 +10,17 @@ const createProduct = async (req, res) => {
     }
 }
 
-
+const getAllProduct = async (req, res) => {
+    try {
+        let result = await productServices.getAllProductServices()
+        return res.status(200).json(result)
+    } catch (e) {
+        console.log(e)
+        return res.status(400).json(e)
+    }
+}
 
 export default {
-    createProduct
+    createProduct,
+    getAllProduct
 }

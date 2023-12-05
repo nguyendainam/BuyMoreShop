@@ -15,7 +15,7 @@ import HeaderReponsive from './HeaderReponsive'
 
 type MenuItem = Required<MenuProps>['items'][number]
 
-function getItem (
+function getItem(
   label: React.ReactNode,
   key?: React.Key | null,
   icon?: React.ReactNode,
@@ -31,7 +31,7 @@ function getItem (
   } as MenuItem
 }
 
-export default function Header () {
+export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
 
   const listItems = [
@@ -80,7 +80,7 @@ export default function Header () {
         key={item.key}
         className={style.itemDropdown}
         overlay={menu}
-        // onClick={() => console.log(item.key)}
+      // onClick={() => console.log(item.key)}
       >
         <Space>
           {item.label}

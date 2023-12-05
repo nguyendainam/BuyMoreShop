@@ -5,6 +5,7 @@ import MainDashboard from './container/Dashboard/mainDashboard'
 import './assets/style/style.module.scss'
 import ClientRouter from './router/clientRouter'
 import LoginUser from './container/Clients/Login/LoginUser'
+import ResetPassword from './container/Clients/Login/ResetPassword'
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='login' element={<LoginUser />} />
+        <Route path='api/user/reset-password/:token' element={<ResetPassword />} />
         <Route element={<PrivateRouter />} >
           <Route path='/*' element={<ClientRouter />} />
 

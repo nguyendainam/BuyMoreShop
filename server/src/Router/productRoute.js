@@ -37,7 +37,7 @@ router.get('/system/getAllDiscount', discountController.getAllDiscount)
 // CRUD PRODUCT
 
 router.post('/system/createProduct', productController.createProduct)
-
+router.get('/system/getAllProduct', productController.getAllProduct)
 //  CRUD UI
 
 router.post('/system/ui/createCarousel', manageUIController.createCarouselImage)

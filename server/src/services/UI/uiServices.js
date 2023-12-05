@@ -13,9 +13,6 @@ const createCarouserServices = async (data) => {
 
     const arrImage = JSON.parse(data.ListImage);
     const pool = await connectDB();
-
-    console.log(arrImage);
-
     const isShow = 1;
 
     await Promise.all(
@@ -38,7 +35,7 @@ const createCarouserServices = async (data) => {
             VALUES (@Image, @Type, @IsShow)
           `);
 
-          if (result.rowsAffected[0] === 0) {
+          if (result.rowsAffected[0] === 0 || !result) {
             RemoveImage(saveImage);
           }
         } else {
@@ -50,19 +47,12 @@ const createCarouserServices = async (data) => {
       })
     );
     // Close the database connection
-    pool.close();
     return {
       err: 0,
     };
   } catch (e) {
     // Log the error for debugging
     console.error("Error in createCarouserServices:", e);
-
-    // Release the database connection in case of an error
-    if (pool) {
-      pool.close();
-    }
-
     return {
       err: -1,
       errMessage: "An error occurred",
@@ -74,33 +64,33 @@ const getCarouselImageService = (key) => {
   return new Promise(async (resolve, reject) => {
     try {
       let keyList = key
-      if(!key){
-        keyList= 'All'
+      if (!key) {
+        keyList = 'All'
       }
       let pool = await connectDB()
-      if(key.toLowerCase() === 'all'){
+      if (key.toLowerCase() === 'all') {
         let result = await pool.query(`SELECT * FROM  CarouselImage `)
-        if(result.rowsAffected[0] > 0) {
+        if (result.rowsAffected[0] > 0) {
           resolve({
             err: 0,
-            errMessage:'Get Data successfull',
+            errMessage: 'Get Data successfull',
             items: result.recordset
           })
-        }else {
+        } else {
           resolve({
             err: 1,
             items: result.recordset
           })
         }
-      }else {
+      } else {
         let result = await pool.query(`SELECT * FROM  CarouselImage WHERE  TypeImage = ${key} `)
-        if(result.rowsAffected[0] > 0) {
+        if (result.rowsAffected[0] > 0) {
           resolve({
             err: 0,
-            errMessage:'Get Data successfull',
+            errMessage: 'Get Data successfull',
             items: result.recordset
           })
-        }else {
+        } else {
           resolve({
             err: 1,
             items: result.recordset

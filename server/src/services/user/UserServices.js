@@ -8,9 +8,10 @@ import {
 } from '../../component/checkInformation.js'
 import jwt from '../../component/jwt.js'
 import { createPasswordChangeToken } from '../../component/random.js'
-import moment from 'moment/moment.js'
+import moment from 'moment'
 import sendEmail from '../../component/formemail.js'
 import { fomatForgetPassword } from '../../until/formHtml.js'
+import crypto from 'crypto'
 
 let RegisterUserService = data => {
   return new Promise(async (resolve, reject) => {
@@ -193,9 +194,159 @@ const forgotPasswordServices = email => {
   })
 }
 
+
+const resetPasswordServices = async (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.token || !data.password) {
+        resolve({
+          err: -1,
+          errMessage: "Missing data required",
+        });
+      }
+
+
+
+      const hashToken = crypto.createHash('SHA256').update(data.token).digest('hex');
+      const pool = await connectDB();
+      const resultUser = await pool.query(
+        `SELECT * FROM Users WHERE ResetToken = '${hashToken}'`
+      );
+
+      if (resultUser.rowsAffected[0] === 1) {
+
+        const ResetTokenExpries = moment(resultUser.recordset[0].ResetTokenExpries).format("YYYY-MM-DD HH:mm");
+        const IdUser = resultUser.recordset[0].UserID
+
+        const newDate = moment(Date.now()).format("YYYY-MM-DD HH:mm");
+
+        if (newDate > ResetTokenExpries) {
+          resolve({
+            err: 1,
+            errMessage: 'Time has expired, please resubmit a new request '
+          })
+        } else {
+          const hashpassword = await hashUserPassword(data.password)
+          const resultUpdate = await pool.request()
+            .input('Password', mssql.VarChar, hashpassword)
+            .query(`UPDATE  Users 
+                    SET Password = @Password , ResetToken = NULL, ResetTokenExpries = NULL
+                    WHERE UserID = '${IdUser}'
+            `)
+
+          if (resultUpdate.rowsAffected[0] === 1) {
+            resolve({
+              err: 0,
+              errMessage: 'Change pass successfull'
+            })
+          } else {
+            resolve({
+              err: 2,
+              errMessage: 'Change pass faild'
+            })
+          }
+
+        }
+      } else {
+        resolve({
+          err: -1,
+          errMessage: 'Not found User'
+        });
+      }
+
+
+    } catch (e) {
+      console.log(e);
+      reject(e);
+    }
+  });
+};
+
+const getAllUsers = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const pool = await connectDB()
+      let result = await pool.query(`SELECT * FROM Users `)
+      resolve({
+        err: 0,
+        items: result.recordset
+      })
+    } catch (e) {
+      reject(e)
+    }
+  })
+}
+
+
+const deleteUser = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!id) {
+        resolve({
+          err: -1,
+          errMessage: 'Missing data required'
+        })
+      } else {
+        const pool = await connectDB()
+        const result = await pool.query(`
+        BEGIN TRANSACTION;
+        DELETE FROM UserSessions WHERE UserID = '${id}';
+        DELETE FROM Users WHERE UserID = '${id}';
+        COMMIT;
+          `)
+        console.log(result)
+        if (result.rowsAffected[0] === 1 || result.rowsAffected[1] === 1) {
+          resolve({
+            err: 0,
+            errMessage: 'Delete Successfull'
+          })
+        } else {
+          resolve({
+            err: 1,
+            errMessage: 'Detelet failed'
+          })
+        }
+
+      }
+    } catch (e) {
+      reject(e)
+    }
+  })
+}
+
+
+const updateUser = (data, id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!id || Object.keys(data).length === 0) {
+        resolve({
+          err: -1,
+          errMessage: 'Missing data required'
+        })
+      } else {
+        const pool = await connectDB()
+        const result = await pool.query(`
+          UPDATE Users 
+          SET UserName = '${data.UserName}',
+              Gender   = '${data.gender}
+          WHERE UserId = '${id}'`
+        )
+      }
+
+
+    } catch (e) {
+      reject(e)
+    }
+  })
+}
+
 export default {
   RegisterUserService,
   getCurrentService,
   refreshNewAccessTokenService,
-  forgotPasswordServices
+  forgotPasswordServices,
+  resetPasswordServices,
+  getAllUsers,
+  deleteUser,
+  updateUser
 }

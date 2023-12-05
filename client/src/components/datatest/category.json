@@ -5,7 +5,14 @@
     "list": [
       { "key": 2, "name": "Sony" },
       { "key": 2, "name": "Sony" },
-      { "key": 2, "name": "Sony" }
+      {
+        "key": 322,
+        "name": "Sony",
+        "list": [
+          { "key": 2, "name": "Sony" },
+          { "key": 2, "name": "Sony" }
+        ]
+      }
     ]
   },
   {
