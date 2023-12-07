@@ -428,6 +428,7 @@ const getItemCategoryById = keyId => {
           L.nameEN as ListNameEN ,
           C.nameVI as CatNameVI ,
           C.nameEN as CatNameEN,
+          C.ImageCat as imageCat,
           C.Id   as IdCat
           FROM ItemCategory  AS I
                     JOIN ListCategory as L ON L.idListCat = I.IdListCat
