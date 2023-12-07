@@ -43,7 +43,7 @@ const LoginUser: React.FC = () => {
                 <Input.Password />
               </Form.Item>
             </Form>
-            <div className={style.inputWidthLogin}>
+            <div className={style.inputWidth}>
               <Button>Login </Button>
             </div>
             OR

@@ -1,3 +1,5 @@
+@import '../../../assets/style/color';
+
 .mainSlide{
     width: 100%;
     height: 35%;
@@ -48,7 +50,7 @@
 }
 .Featured_categories{
     width: 100%;
-    height: 20%;
+    height: 35%;
     background-color: white;
     padding-left: 5%;
   
@@ -60,23 +62,26 @@
     
 
     .itemCat{
-        width: 10%;
+        width: 9%;
         height: 40%;
-        border: 1px solid red;
-        margin: 3px;
+        border: 1px solid $linegray;
+        margin: 1px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        cursor: pointer;
 
         .image {
-            width: 60%;
-            height: 70%;
-            border: 1px solid darkblue;
-            object-fit: contain;
+            width: 40%;
+            height: 40%;
+            object-fit:  cover;
         }
         .title {
             font-size: 12px;
+            padding-top: 7%;
+            height: 10%;
+            font-weight: 500;
         }
     }
 }

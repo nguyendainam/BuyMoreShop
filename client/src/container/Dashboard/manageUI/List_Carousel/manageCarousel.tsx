@@ -13,7 +13,7 @@ import {
 import { UploadOutlined } from '@ant-design/icons'
 import { RcFile } from 'antd/es/upload'
 import style from './manageCarousel.module.scss'
-import FormData from 'form-data'
+
 import { createNewSlide } from '../../../../services/product'
 
 import { ImageCarousel } from '../../../../components/CarouselImage'
@@ -22,6 +22,7 @@ import Column from 'antd/es/table/Column'
 import { URL_SERVER_IMG } from '../../../../until/enum'
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6'
 import { MdDelete, MdEditSquare } from 'react-icons/md'
+import FormData from 'form-data'
 
 const getBase64 = (file: RcFile): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -31,18 +32,19 @@ const getBase64 = (file: RcFile): Promise<string> =>
     reader.onerror = error => reject(error)
   })
 
-export default function ManageCarousel () {
+export default function ManageCarousel() {
   const [fileList, setFileList] = useState<UploadFile[]>([])
   const [previewOpen, setPreviewOpen] = useState(false)
   const [previewImage, setPreviewImage] = useState('')
   const [previewImages, setPreviewImages] = useState<string[]>([])
   const [previewTitle, setPreviewTitle] = useState<string>('')
-  const [dataListImage, setdataListImage]  = useState <IImageCarousel[]>([])
-
+  const [dataListImage, setdataListImage] = useState<IImageCarousel[]>([])
+  const key = 'All'
   const onChange: UploadProps['onChange'] = async ({
     fileList: newFileList
   }) => {
     setFileList(newFileList)
+
 
     // Use Promise.all to handle asynchronous image previews
     const previews = await Promise.all(
@@ -55,6 +57,8 @@ export default function ManageCarousel () {
     )
 
     setPreviewImages(previews)
+
+
   }
 
   const handlePreview = async (file: UploadFile) => {
@@ -63,8 +67,8 @@ export default function ManageCarousel () {
   }
 
   const handleOnSave = async () => {
-    console.log(fileList)
-
+    // console.log(Object.values(fileList))
+    // console.log(typeof fileList)
     const formData = new FormData()
     formData.append('ListImage', JSON.stringify(fileList))
     formData.append('typeImage', 'mainCarousel')
@@ -72,21 +76,22 @@ export default function ManageCarousel () {
     const result = await createNewSlide(formData)
     if (result.data.err === 0) {
       message.success('Created successfully')
+      handleGetListImage()
     } else {
       message.error('Failed to create')
     }
   }
 
   const handleGetListImage = async () => {
-    const key = 'All'
-    const ListImage =  await ImageCarousel(key)
+
+    const ListImage = await ImageCarousel(key)
     setdataListImage(ListImage)
   }
 
   useEffect(() => {
     handleGetListImage()
 
-  })
+  }, [])
 
   const handleCancel = () => setPreviewOpen(false)
   return (
@@ -139,41 +144,41 @@ export default function ManageCarousel () {
       </div>
 
       <div className={style.formTable}>
-      <Table dataSource={dataListImage} pagination={false} scroll={{ y: 450 }}>
-        <Column 
-         title= 'Image'
-         dataIndex={'Image'}
-          render={data => (
+        <Table dataSource={dataListImage} pagination={false} scroll={{ y: 450 }}>
+          <Column
+            title='Image'
+            dataIndex={'Image'}
+            render={data => (
               <div>
-                  <Image
-                      width={300}
-                      height={150}
-                      src={`${URL_SERVER_IMG}${data}`}
-                  />
+                <Image
+                  width={300}
+                  height={150}
+                  src={`${URL_SERVER_IMG}${data}`}
+                />
               </div>
-          )}
-      />
-      <Column title ='Type Image' dataIndex={'type'} />
-      <Column
-                        title='Action'
-                        key='key'
-                        render={record => (
-                            <Space size='middle'>
-                                <div className={style.fontIconsm}>
-                                    {record.IsShow === true ? <FaRegEye className={style.iconGreen} /> :
-                                        <FaRegEyeSlash
-                                            className={style.iconstrongGreen} />}
-                                </div>
-                                <div className={style.fontIconsm} >
-                                    <MdEditSquare className={style.iconBlue} />
-                                </div>
-                                <div className={style.fontIconsm}>
-                                    <MdDelete className={style.iconRed} />
-                                </div>
-                            </Space>
-                        )}
-                    />
-      </Table>
+            )}
+          />
+          <Column title='Type Image' dataIndex={'type'} />
+          <Column
+            title='Action'
+            key='key'
+            render={record => (
+              <Space size='middle'>
+                <div className={style.fontIconsm}>
+                  {record.IsShow === true ? <FaRegEye className={style.iconGreen} /> :
+                    <FaRegEyeSlash
+                      className={style.iconstrongGreen} />}
+                </div>
+                <div className={style.fontIconsm} >
+                  <MdEditSquare className={style.iconBlue} />
+                </div>
+                <div className={style.fontIconsm}>
+                  <MdDelete className={style.iconRed} />
+                </div>
+              </Space>
+            )}
+          />
+        </Table>
       </div>
     </div>
   )

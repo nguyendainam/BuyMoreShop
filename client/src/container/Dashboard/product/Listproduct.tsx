@@ -1,6 +1,11 @@
-import React from 'react'
-import { TextEditor } from '../../../components/textEditor'
+import React from "react";
+
 
 export default function Listproduct() {
-  return <div style={{ width: '50%' }}><TextEditor /></div>
+  return (
+    <div style={{ width: "50%" }}>
+      ListBrand
+      <div></div>
+    </div>
+  );
 }

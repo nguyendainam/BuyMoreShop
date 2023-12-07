@@ -620,6 +620,37 @@ const getAllProductType = () => {
     }
   })
 }
+// I.IdItemCat as IdCat, I.nameVI as titleLisVI, I.nameEN as titleListEN
+// JOIN ItemCategory as I ON I.IdListCat =  L.idListCat
+const getListCatHomePage = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let pool = await connectDB()
+      let result = await pool.query(`
+            SELECT C.* 
+            FROM Category as C ,
+             L.idListCat, L.nameVI , L.nameEN,
+             I.IdItemCat as IdItem, I.nameVI as viItem, I.nameEN as enItem
+             JOIN ListCategory AS L ON L.IdCat = C.Id
+             JOIN ItemCategory as I ON I.IdListCat =  L.idListCat
+      `)
+
+
+      if (result) {
+        resolve({
+          err: 0,
+          items: result.recordsets
+        })
+      } else {
+        resolve({
+          err: 1
+        })
+      }
+    } catch (e) {
+      reject(e)
+    }
+  })
+}
 
 
 export default {
@@ -631,4 +662,5 @@ export default {
   getItemCategoryById,
   createOrUpdateProductType,
   getAllProductType,
+  getListCatHomePage
 }

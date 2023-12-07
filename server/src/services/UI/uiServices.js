@@ -3,104 +3,107 @@ import { connectDB } from "../../connectDB/index.js";
 import mssql from "mssql";
 
 const createCarouserServices = async (data) => {
-  try {
-    if (!data.ListImage) {
-      return {
-        err: -1,
-        errMessage: "Missing data require",
-      };
-    }
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.ListImage) {
+        return {
+          err: -1,
+          errMessage: "Missing data require",
+        };
+      } else {
+        if (data.ListImage) {
+          const arrImage = JSON.parse(data.ListImage);
+          const pool = await connectDB();
+          const isShow = 1;
 
-    const arrImage = JSON.parse(data.ListImage);
-    const pool = await connectDB();
 
-    console.log(arrImage);
+          arrImage.map(async (img) => {
+            const nameImage = img.name;
+            const base64ImagePr = img.thumbUrl.split(";base64,").pop();
+            const saveImage = await saveImageToFolder(
+              base64ImagePr,
+              nameImage,
+              "ImageCarousel"
+            );
 
-    const isShow = 1;
+            if (saveImage) {
+              const result = await pool
+                .request()
+                .input("Type", mssql.VarChar, data.typeImage)
+                .input("Image", mssql.VarChar, saveImage)
+                .input("IsShow", mssql.Bit, isShow).query(`
+                  INSERT INTO CarouselImage (Image, Type, IsShow)
+                  VALUES (@Image, @Type, @IsShow)
+                `);
 
-    await Promise.all(
-      arrImage.map(async (img) => {
-        const nameImage = img.name;
-        const base64ImagePr = img.thumbUrl.split(";base64,").pop();
-        const saveImage = await saveImageToFolder(
-          base64ImagePr,
-          nameImage,
-          "ImageCarousel"
-        );
+              if (result.rowsAffected[0] === 0 || !result) {
+                RemoveImage(saveImage);
+              }
 
-        if (saveImage) {
-          const result = await pool
-            .request()
-            .input("Type", mssql.VarChar, data.typeImage)
-            .input("Image", mssql.VarChar, saveImage)
-            .input("IsShow", mssql.Bit, isShow).query(`
-            INSERT INTO CarouselImage (Image, TypeImage, IsShow)
-            VALUES (@Image, @Type, @IsShow)
-          `);
+              resolve({
+                err: 0,
+                errMessage: 'Create successfull'
+              })
+            } else {
+              return {
+                err: -1,
+                errMessage: "Create image failed",
+              };
+            }
+          })
 
-          if (result.rowsAffected[0] === 0) {
-            RemoveImage(saveImage);
-          }
         } else {
+          // Close the database connection
           return {
-            err: -1,
-            errMessage: "Create image failed",
+            err: 1,
+            errMessage: 'Create Image fail'
           };
         }
-      })
-    );
-    // Close the database connection
-    pool.close();
-    return {
-      err: 0,
-    };
-  } catch (e) {
-    // Log the error for debugging
-    console.error("Error in createCarouserServices:", e);
-
-    // Release the database connection in case of an error
-    if (pool) {
-      pool.close();
+      }
     }
 
-    return {
-      err: -1,
-      errMessage: "An error occurred",
-    };
-  }
+    catch (e) {
+      // Log the error for debugging
+      console.error("Error in createCarouserServices:", e);
+      return {
+        err: -1,
+        errMessage: "An error occurred",
+      };
+    }
+  })
 };
 
 const getCarouselImageService = (key) => {
   return new Promise(async (resolve, reject) => {
     try {
       let keyList = key
-      if(!key){
-        keyList= 'All'
+      if (!key) {
+        keyList = 'All'
       }
       let pool = await connectDB()
-      if(key.toLowerCase() === 'all'){
+      if (key.toLowerCase() === 'all') {
         let result = await pool.query(`SELECT * FROM  CarouselImage `)
-        if(result.rowsAffected[0] > 0) {
+        if (result.rowsAffected[0] > 0) {
           resolve({
             err: 0,
-            errMessage:'Get Data successfull',
+            errMessage: 'Get Data successfull',
             items: result.recordset
           })
-        }else {
+        } else {
           resolve({
             err: 1,
             items: result.recordset
           })
         }
-      }else {
+      } else {
         let result = await pool.query(`SELECT * FROM  CarouselImage WHERE  TypeImage = ${key} `)
-        if(result.rowsAffected[0] > 0) {
+        if (result.rowsAffected[0] > 0) {
           resolve({
             err: 0,
-            errMessage:'Get Data successfull',
+            errMessage: 'Get Data successfull',
             items: result.recordset
           })
-        }else {
+        } else {
           resolve({
             err: 1,
             items: result.recordset

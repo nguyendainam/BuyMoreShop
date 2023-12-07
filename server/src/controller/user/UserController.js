@@ -61,7 +61,6 @@ const forgotPassword = async (req, res) => {
         err: -1,
         errMessage: 'Missing data required'
       })
-
     let result = await UserServices.forgotPasswordServices(email)
     return res.status(200).json(result)
   } catch (e) {
@@ -70,9 +69,55 @@ const forgotPassword = async (req, res) => {
   }
 }
 
+
+const resetNewPassword = async (req, res) => {
+  try {
+    const result = await UserServices.resetPasswordServices(req.body)
+    return res.status(200).json(result)
+  } catch (e) {
+    return res.status(400).json(e)
+  }
+}
+
+
+const getUsers = async (req, res) => {
+  try {
+    const result = await UserServices.getAllUsers()
+    return res.status(200).json(result)
+  } catch (e) {
+    return res.status(400).json(e)
+  }
+}
+
+
+const DeleteUser = async (req, res) => {
+  try {
+    const result = await UserServices.deleteUser(req.query.id)
+    return res.status(200).json(result)
+  } catch (e) {
+    return res.status(400).json(e)
+  }
+}
+
+
+const UpdateUser = async (req, res) => {
+  try {
+    const { _id } = req.user
+
+    const result = await UserServices.updateUser(req.body, _id)
+  } catch (e) {
+    return res.status(400).json(e)
+  }
+}
+
+
 export default {
   RegisterUser,
   getCurrentUser,
   refreshNewAccessToken,
-  forgotPassword
+  forgotPassword,
+  getUsers,
+  resetNewPassword,
+  DeleteUser,
+  UpdateUser
 }

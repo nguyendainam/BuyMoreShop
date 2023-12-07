@@ -93,6 +93,16 @@ const getAllProductType = async (req, res) => {
   }
 }
 
+
+const getListCategoryHomepage = async (req, res) => {
+  try {
+    let result = await categoryServices.getListCatHomePage()
+    return res.status(200).json(result)
+  } catch (e) {
+    return res.status(400).json(e)
+  }
+}
+
 export default {
   createCategory,
   createItemListCat,
@@ -101,5 +111,6 @@ export default {
   getAllListCategory,
   getItemCategoryById,
   ProductType,
-  getAllProductType
+  getAllProductType,
+  getListCategoryHomepage
 }

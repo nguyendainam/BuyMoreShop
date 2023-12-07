@@ -23,7 +23,7 @@ interface IActionCategory {
   action: 'create' | 'update'
 }
 
-export default function CategoryProduct () {
+export default function CategoryProduct() {
   const [actionCat, setactionCat] = useState<IActionCategory>({
     action: 'create'
   })
@@ -69,6 +69,11 @@ export default function CategoryProduct () {
     if (actionCat.action === 'create') {
       const saveData = await CorUCategories(formData)
       if (saveData.data.err === 0) {
+        const data = await getListCategory()
+        setDataCategory(data)
+        handleClear()
+
+
         message.success('Created category successfully')
       } else {
         message.error('Error creating category')

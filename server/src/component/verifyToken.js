@@ -28,3 +28,13 @@ export const verifyAccessToken = asyncHandler(async (req, res, next) => {
     })
   }
 })
+
+
+export const isAdmin = asyncHandler((req, res, next) => {
+  const { role } = req.user
+  if (role !== 'Admin') return res.status(400).json({
+    err: -1,
+    errMessage: 'Require admin role'
+  })
+  next()
+})

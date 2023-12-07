@@ -21,6 +21,10 @@ export const getAllListCategory = async () => {
   return await axios.get('/system/getAllListCategory')
 }
 
+export const getListCatHomePage = async () => {
+  return await axios.get('/system/getCategoryHomeClient')
+}
+
 export const CorUItemCategory = async (data: FormData) => {
   return await axios.post('/system/CandUItemsCategory', data)
 }
@@ -40,6 +44,11 @@ export const getAllProductType = async () => {
 // PRODUCT
 export const CreateProduct = async (data: FormData) => {
   return await axios.post(`/system/createProduct`, data)
+}
+
+
+export const getAllProduct = async () => {
+  return await axios.get(`/system/getAllProduct`)
 }
 
 // BRANDS

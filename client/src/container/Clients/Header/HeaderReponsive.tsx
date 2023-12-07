@@ -3,7 +3,7 @@ import style from './HeaderReponsive.module.scss'
 import { AiOutlineMenuUnfold, AiOutlineShoppingCart } from 'react-icons/ai'
 import { Logo } from '../../../assets/image'
 import HeaderSideBar from '../SideBar/headerSideBar'
-export default function HeaderReponsive () {
+export default function HeaderReponsive() {
   const [openMenu, setOpenMenu] = React.useState<boolean>(false)
 
   const handleOpenMenu = () => {
@@ -18,7 +18,9 @@ export default function HeaderReponsive () {
         </div>
 
         <div className={style.formLogo}>
-          <img src={Logo} className={style.imgLogo} />
+          <img src={Logo} className={style.imgLogo}
+
+          />
         </div>
 
         <div className={style.formItems}>

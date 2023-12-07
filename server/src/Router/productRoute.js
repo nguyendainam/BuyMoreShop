@@ -23,6 +23,9 @@ router.get('/system/getAllProductType', categoryController.getAllProductType)
 router.get('/system/getAllCategory', categoryController.getAllcategory)
 router.get('/system/getAllListCategory', categoryController.getAllListCategory)
 
+
+
+router.get('/system/getCategoryHomeClient', categoryController.getListCategoryHomepage)
 // CRUD BRAND
 
 router.post('/system/createOrupdateBrand', brandController.createOrUpdate)
@@ -37,7 +40,7 @@ router.get('/system/getAllDiscount', discountController.getAllDiscount)
 // CRUD PRODUCT
 
 router.post('/system/createProduct', productController.createProduct)
-
+router.get('/system/getAllProduct', productController.getAllProduct)
 //  CRUD UI
 
 router.post('/system/ui/createCarousel', manageUIController.createCarouselImage)
